@@ -1,4 +1,5 @@
 #include <QFile>
+#include <QFileDialog>
 #include <QTextCodec>
 #include <QFileInfo>
 #include <QStatusBar>
@@ -71,6 +72,10 @@ void Workspace::showError(const QString& title, const QString& text) {
 }
 
 void Workspace::setCurrentEditor(Editor* editor) {
+    if (m_currentEditor != nullptr) {
+        onFileClose(); // TODO now only one file is supported
+    }
+
     m_mainWindow.setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             &m_mainWindow, &QWidget::setWindowModified);
@@ -80,7 +85,14 @@ void Workspace::setCurrentEditor(Editor* editor) {
 }
 
 void Workspace::onFileOpen() {
+    QStringList fileNames = QFileDialog::getOpenFileNames(
+        &m_mainWindow,
+        "Open files",
+        QDir::currentPath());
 
+    foreach(const QString& fileName, fileNames) {
+        openFile(fileName);
+    }
 }
 
 void Workspace::onFileSave() {
