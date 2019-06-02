@@ -50,7 +50,7 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
 
     m_files.append(editor);
 
-    m_mainWindow.setCentralWidget(&editor->qutepart);
+    setCurrentEditor(editor);
 }
 
 QString Workspace::readFile(const QString& filePath) {
@@ -75,6 +75,14 @@ QString Workspace::readFile(const QString& filePath) {
 
 void Workspace::showError(const QString& title, const QString& text) {
     QMessageBox::critical(&m_mainWindow, title, text, QMessageBox::Ok);
+}
+
+void Workspace::setCurrentEditor(Editor* editor) {
+    m_mainWindow.setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath).fileName()));
+    connect(editor->qutepart.document(), &QTextDocument::modificationChanged,
+            &m_mainWindow, &QWidget::setWindowModified);
+
+    m_mainWindow.setCentralWidget(&editor->qutepart);
 }
 
 void Workspace::onFileOpen() {

@@ -33,6 +33,8 @@ private:
     QString readFile(const QString& filePath);
     void showError(const QString& header, const QString& text);
 
+    void setCurrentEditor(Editor*);
+
 private slots:
     void onFileOpen();
     void onFileSave();

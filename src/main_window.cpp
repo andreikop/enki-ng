@@ -10,7 +10,6 @@ MainWindow::MainWindow() {
     font.setPointSize(12);
     font.setFamily("Monospace");
     setFont(font);
-
 }
 
 MenuBar* MainWindow::menuBar() {
