@@ -8,16 +8,9 @@
 #include "workspace.h"
 
 
-Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent):
-    filePath(filePath),
-    qutepart(text, parent)
-{
-    qutepart.initHighlighter(filePath);
-}
-
-
 Workspace::Workspace(MainWindow& mainWindow):
-    m_mainWindow(mainWindow)
+    m_mainWindow(mainWindow),
+    m_currentEditor(nullptr)
 {
     connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
@@ -78,11 +71,12 @@ void Workspace::showError(const QString& title, const QString& text) {
 }
 
 void Workspace::setCurrentEditor(Editor* editor) {
-    m_mainWindow.setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath).fileName()));
-    connect(editor->qutepart.document(), &QTextDocument::modificationChanged,
+    m_mainWindow.setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
+    connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             &m_mainWindow, &QWidget::setWindowModified);
 
-    m_mainWindow.setCentralWidget(&editor->qutepart);
+    m_mainWindow.setCentralWidget(&editor->qutepart());
+    m_currentEditor = editor;
 }
 
 void Workspace::onFileOpen() {
@@ -90,11 +84,17 @@ void Workspace::onFileOpen() {
 }
 
 void Workspace::onFileSave() {
+    if (m_currentEditor == nullptr) {
+        return;
+    }
 
+    m_currentEditor->saveFile();
 }
 
 void Workspace::onFileClose() {
-    if ( ! m_files.isEmpty()) {
-        delete m_files.takeFirst();
+    if (m_currentEditor != nullptr) {
+        m_files.removeOne(m_currentEditor);
+        delete m_currentEditor;
+        m_currentEditor = nullptr;
     }
 }

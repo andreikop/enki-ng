@@ -24,6 +24,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
 set(enki_SRCS
+    src/editor.cpp
     src/enki.cpp
     src/main_window.cpp
     src/workspace.cpp
