@@ -10,9 +10,12 @@
 
 
 Workspace::Workspace(MainWindow& mainWindow):
+    m_widget(new QStackedWidget(&mainWindow)),
     m_mainWindow(mainWindow),
     m_currentEditor(nullptr)
 {
+    m_mainWindow.setCentralWidget(m_widget);
+
     connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
     connect(mainWindow.menuBar()->fileCloseAction, &QAction::triggered, this, &Workspace::onFileClose);
@@ -80,7 +83,7 @@ void Workspace::setCurrentEditor(Editor* editor) {
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             &m_mainWindow, &QWidget::setWindowModified);
 
-    m_mainWindow.setCentralWidget(&editor->qutepart());
+    m_widget->addWidget(&editor->qutepart());
     m_currentEditor = editor;
 }
 

@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <QStackedWidget>
 #include <QString>
+
 
 #include "qutepart.h"
 
@@ -20,6 +22,7 @@ public:
     void openFile(const QString& filePath, int line=-1);
 
 private:
+    QStackedWidget* m_widget; // owned by the main window
     QMainWindow& m_mainWindow;
 
     QList<Editor*> m_files;
