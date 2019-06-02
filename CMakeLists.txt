@@ -38,3 +38,5 @@ add_executable(enki-ng ${enki_SRCS})
 
 
 target_link_libraries(enki-ng Qt5::Core Qt5::Widgets qutepart)
+
+install(TARGETS enki-ng DESTINATION bin)
