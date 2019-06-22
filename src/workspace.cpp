@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#include "file_explorer.h"
+
 #include "workspace.h"
 
 
@@ -15,6 +17,8 @@ Workspace::Workspace(MainWindow& mainWindow):
     m_currentEditor(nullptr)
 {
     m_mainWindow.setCentralWidget(m_widget);
+
+    new FileExplorer(&m_mainWindow);
 
     connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);

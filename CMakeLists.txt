@@ -26,6 +26,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 set(enki_SRCS
     src/editor.cpp
     src/enki.cpp
+    src/file_explorer.cpp
     src/main_window.cpp
     src/workspace.cpp
     src/menu_bar.cpp
