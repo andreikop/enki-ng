@@ -21,11 +21,13 @@ public:
 
     void openFile(const QString& filePath, int line=-1);
 
+    const QList<Editor*>& editors() const;
+
 private:
     QStackedWidget* m_widget; // owned by the main window
     QMainWindow& m_mainWindow;
 
-    QList<Editor*> m_files;
+    QList<Editor*> m_editors;
     Editor* m_currentEditor;
 
     QString readFile(const QString& filePath);

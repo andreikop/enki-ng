@@ -18,7 +18,7 @@ Workspace::Workspace(MainWindow& mainWindow):
 {
     m_mainWindow.setCentralWidget(m_widget);
 
-    new FileExplorer(&m_mainWindow);
+    new FileExplorer(&m_mainWindow, this);
 
     connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
@@ -26,7 +26,7 @@ Workspace::Workspace(MainWindow& mainWindow):
 }
 
 Workspace::~Workspace() {
-    foreach(Editor* editor, m_files) {
+    foreach(Editor* editor, m_editors) {
         delete editor;
     }
 }
@@ -49,9 +49,13 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
 
     Editor *editor = new Editor(canonicalPath, text, &m_mainWindow);
 
-    m_files.append(editor);
+    m_editors.append(editor);
 
     setCurrentEditor(editor);
+}
+
+const QList<Editor*>& Workspace::editors() const {
+    return m_editors;
 }
 
 QString Workspace::readFile(const QString& filePath) {
@@ -112,7 +116,7 @@ void Workspace::onFileSave() {
 
 void Workspace::onFileClose() {
     if (m_currentEditor != nullptr) {
-        m_files.removeOne(m_currentEditor);
+        m_editors.removeOne(m_currentEditor);
         delete m_currentEditor;
         m_currentEditor = nullptr;
     }

@@ -3,9 +3,9 @@
 #include <QMainWindow>
 #include <QDockWidget>
 
-
+#include "workspace.h"
 
 class FileExplorer: public QDockWidget {
 public:
-    FileExplorer(QMainWindow *mainWindow);
+    FileExplorer(QMainWindow *mainWindow, Workspace *workspace);
 };
