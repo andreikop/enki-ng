@@ -1,5 +1,6 @@
 #include <QTreeView>
 #include <QFileInfo>
+#include <QDebug>
 
 #include "editor.h"
 #include "file_explorer.h"
@@ -13,7 +14,12 @@ class OpenedFileModel: public QAbstractItemModel {
 public:
     OpenedFileModel(QObject *parent, Workspace *workspace):
         m_editors(workspace->editors())
-    {}
+    {
+        connect(workspace, &Workspace::editorOpened,
+            this, &OpenedFileModel::onEditorOpened);
+        connect(workspace, &Workspace::editorClosed,
+            this, &OpenedFileModel::onEditorClosed);
+    }
 
     int columnCount(const QModelIndex& parent) const {
         return 1;
@@ -67,8 +73,55 @@ public:
         return QModelIndex();
     }
 
+    QModelIndex editorIndex(Editor* editor) const {
+        return index(m_editors.indexOf(editor), 0);
+    }
+
+private slots:
+    void onEditorOpened(Editor* editor) {
+        int index = m_editors.indexOf(editor);
+        beginInsertRows(QModelIndex(), index, index);
+        endInsertRows();
+    }
+
+    void onEditorClosed(Editor* editor) {
+        int index = m_editors.indexOf(editor);
+        beginRemoveRows(QModelIndex(), index, index);
+        endRemoveRows();
+    }
+
 private:
     const QList<Editor*>& m_editors;
+};
+
+class FileExplorerTreeView: public QTreeView {
+public:
+    FileExplorerTreeView(QObject* parent, Workspace* workspace) {
+        setHeaderHidden(true);
+        setRootIsDecorated(false);
+        setTextElideMode(Qt::ElideMiddle);
+        setUniformRowHeights(true);
+
+        m_model = new OpenedFileModel(this, workspace);
+        setModel(m_model);
+
+        connect(workspace, &Workspace::currentEditorChanged,
+                this, &FileExplorerTreeView::onCurrentEditorChanged);
+    }
+
+private slots:
+
+    void onCurrentEditorChanged(Editor* editor) {
+        QModelIndex index = m_model->editorIndex(editor);
+
+        // startModifyModel()
+        setCurrentIndex(index);
+        scrollTo(index);
+        // self.finishModifyModel()
+    }
+
+private:
+    OpenedFileModel* m_model;
 };
 
 
@@ -78,13 +131,7 @@ FileExplorer::FileExplorer(QMainWindow *mainWindow, Workspace *workspace):
     setAllowedAreas(Qt::LeftDockWidgetArea);
     setFeatures(QDockWidget::DockWidgetClosable);
 
-
-    QTreeView* treeView = new QTreeView(this);
-    treeView->setHeaderHidden(true);
-    treeView->setRootIsDecorated(false);
-    treeView->setTextElideMode(Qt::ElideMiddle);
-    treeView->setUniformRowHeights(true);
-    treeView->setModel(new OpenedFileModel(treeView, workspace));
+    FileExplorerTreeView* treeView = new FileExplorerTreeView(this, workspace);
 
     setWidget(treeView);
     mainWindow->addDockWidget(Qt::LeftDockWidgetArea, this);

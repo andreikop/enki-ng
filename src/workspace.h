@@ -25,6 +25,8 @@ public:
 
 signals:
     void currentEditorChanged(Editor* editor);
+    void editorOpened(Editor* editor);
+    void editorClosed(Editor* editor);
 
 private:
     QStackedWidget* m_widget; // owned by the main window

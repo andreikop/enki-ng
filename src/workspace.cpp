@@ -90,9 +90,11 @@ void Workspace::addEditor(Editor* editor) {
 
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             &m_mainWindow, &QWidget::setWindowModified);
+    emit editorOpened(editor);
 }
 
 void Workspace::removeEditor(Editor* editor) {
+    emit editorClosed(editor);
     disconnect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             &m_mainWindow, &QWidget::setWindowModified);
 
@@ -117,6 +119,8 @@ void Workspace::switchFile(int offset) {
     index += offset;
     if (index >= m_editors.length()) {
         index -= m_editors.length();
+    } else if (index < 0) {
+        index += m_editors.length();
     }
 
     setCurrentEditor(m_editors[index]);
@@ -144,6 +148,7 @@ void Workspace::onFileSave() {
 void Workspace::onFileClose() {
     if (m_currentEditor != nullptr) {
         Editor* editor = m_currentEditor;
+        switchFile(-1);
         removeEditor(editor);
         delete editor;
     }
