@@ -16,8 +16,8 @@ int main(int argc, char** argv) {
     MainWindow mainWindow;
     Workspace workspace(mainWindow);
 
-    if (argc > 1) {
-        QString filePath = argv[1];
+    for (int fileIndex = 1; fileIndex < argc; fileIndex++) {
+        QString filePath = argv[fileIndex];
         workspace.openFile(filePath);
     }
 

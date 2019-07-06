@@ -13,7 +13,8 @@ QAction* addActionToMenu(QMenu* menu, const QString& text, const QKeySequence& s
 
 MenuBar::MenuBar(QMainWindow* parent):
     QMenuBar(parent),
-    fileMenu(addMenu("File"))
+    fileMenu(addMenu("File")),
+    viewMenu(addMenu("View"))
 {
     fileOpenAction = addActionToMenu(fileMenu, "Open...", QKeySequence::Open);
     fileSaveAction = addActionToMenu(fileMenu, "Save", QKeySequence::Save);
@@ -25,5 +26,8 @@ MenuBar::MenuBar(QMainWindow* parent):
         "Quit",
         QApplication::instance(), SLOT(quit()),
         QKeySequence::Quit);
+
+    viewPrevFileAction = addActionToMenu(viewMenu, "Previous file", QKeySequence("Ctrl+PgUp"));
+    viewNextFileAction = addActionToMenu(viewMenu, "Next file", QKeySequence("Ctrl+PgDown"));
 }
 

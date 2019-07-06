@@ -23,6 +23,9 @@ public:
 
     const QList<Editor*>& editors() const;
 
+signals:
+    void currentEditorChanged(Editor* editor);
+
 private:
     QStackedWidget* m_widget; // owned by the main window
     QMainWindow& m_mainWindow;
@@ -33,10 +36,17 @@ private:
     QString readFile(const QString& filePath);
     void showError(const QString& header, const QString& text);
 
+    void addEditor(Editor*);
+    void removeEditor(Editor*);
     void setCurrentEditor(Editor*);
+
+    void switchFile(int offset);
 
 private slots:
     void onFileOpen();
     void onFileSave();
     void onFileClose();
+
+    void onNextFile();
+    void onPrevFile();
 };

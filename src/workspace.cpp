@@ -23,6 +23,9 @@ Workspace::Workspace(MainWindow& mainWindow):
     connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
     connect(mainWindow.menuBar()->fileCloseAction, &QAction::triggered, this, &Workspace::onFileClose);
+
+    connect(mainWindow.menuBar()->viewPrevFileAction, &QAction::triggered, this, &Workspace::onPrevFile);
+    connect(mainWindow.menuBar()->viewNextFileAction, &QAction::triggered, this, &Workspace::onNextFile);
 }
 
 Workspace::~Workspace() {
@@ -49,8 +52,7 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
 
     Editor *editor = new Editor(canonicalPath, text, &m_mainWindow);
 
-    m_editors.append(editor);
-
+    addEditor(editor);
     setCurrentEditor(editor);
 }
 
@@ -82,17 +84,42 @@ void Workspace::showError(const QString& title, const QString& text) {
     QMessageBox::critical(&m_mainWindow, title, text, QMessageBox::Ok);
 }
 
+void Workspace::addEditor(Editor* editor) {
+    m_editors.append(editor);
+    m_widget->addWidget(&editor->qutepart());
+
+    connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
+            &m_mainWindow, &QWidget::setWindowModified);
+}
+
+void Workspace::removeEditor(Editor* editor) {
+    disconnect(editor->qutepart().document(), &QTextDocument::modificationChanged,
+            &m_mainWindow, &QWidget::setWindowModified);
+
+    m_widget->removeWidget(&editor->qutepart());
+    m_editors.removeOne(editor);
+}
+
 void Workspace::setCurrentEditor(Editor* editor) {
-    if (m_currentEditor != nullptr) {
-        onFileClose(); // TODO now only one file is supported
+    if (editor == m_currentEditor) {
+        return;
     }
 
     m_mainWindow.setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
-    connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
-            &m_mainWindow, &QWidget::setWindowModified);
-
-    m_widget->addWidget(&editor->qutepart());
+    m_widget->setCurrentWidget(&(editor->qutepart()));
     m_currentEditor = editor;
+
+    emit currentEditorChanged(m_currentEditor);
+}
+
+void Workspace::switchFile(int offset) {
+    int index = m_editors.indexOf(m_currentEditor);
+    index += offset;
+    if (index >= m_editors.length()) {
+        index -= m_editors.length();
+    }
+
+    setCurrentEditor(m_editors[index]);
 }
 
 void Workspace::onFileOpen() {
@@ -116,8 +143,16 @@ void Workspace::onFileSave() {
 
 void Workspace::onFileClose() {
     if (m_currentEditor != nullptr) {
-        m_editors.removeOne(m_currentEditor);
-        delete m_currentEditor;
-        m_currentEditor = nullptr;
+        Editor* editor = m_currentEditor;
+        removeEditor(editor);
+        delete editor;
     }
+}
+
+void Workspace::onNextFile() {
+    switchFile(+1);
+}
+
+void Workspace::onPrevFile() {
+    switchFile(-1);
 }
