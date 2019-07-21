@@ -54,6 +54,7 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
 
     addEditor(editor);
     setCurrentEditor(editor);
+    editor->qutepart().setFocus();
 }
 
 const QList<Editor*>& Workspace::editors() const {
