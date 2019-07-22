@@ -6,6 +6,14 @@
 #include "file_explorer.h"
 
 
+namespace {
+    QIcon transparentIcon() {
+        QPixmap pixmap(22, 22);  // 22 is copy-pasted from Enki. TODO do not hardcode
+        pixmap.fill(Qt::transparent);
+        return QIcon(pixmap);
+    }
+}
+
 class OpenedFileModel: public QAbstractItemModel {
     /* Model which shows the list of opened files
      * in the tree view (FileExplorer)
@@ -13,12 +21,16 @@ class OpenedFileModel: public QAbstractItemModel {
      */
 public:
     OpenedFileModel(QObject *parent, Workspace *workspace):
-        m_editors(workspace->editors())
+        m_editors(workspace->editors()),
+        m_notModifiedIcon(transparentIcon())
     {
         connect(workspace, &Workspace::editorOpened,
             this, &OpenedFileModel::onEditorOpened);
         connect(workspace, &Workspace::editorClosed,
             this, &OpenedFileModel::onEditorClosed);
+        connect(workspace, &Workspace::modifiedChanged,
+            this, &OpenedFileModel::onEditorModifiedChanged);
+
     }
 
     int columnCount(const QModelIndex& parent) const {
@@ -47,7 +59,11 @@ public:
 
         switch (role) {
             case Qt::DecorationRole:
-                return QVariant();
+                if (editor->qutepart().document()->isModified()) {
+                    return QIcon::fromTheme("document-save");
+                } else {
+                    return m_notModifiedIcon;
+                }
             case Qt::DisplayRole:
                 return QFileInfo(editor->filePath()).fileName();
             case Qt::EditRole:
@@ -90,8 +106,15 @@ private slots:
         endRemoveRows();
     }
 
+    void onEditorModifiedChanged(Editor* editor, bool modified) {
+        int editorIndex = m_editors.indexOf(editor);
+        QModelIndex modelIndex = index(editorIndex, 0);
+        emit dataChanged(modelIndex, modelIndex);
+    }
+
 private:
     const QList<Editor*>& m_editors;
+    QIcon m_notModifiedIcon;
 };
 
 class FileExplorerTreeView: public QTreeView {

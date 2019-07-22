@@ -91,6 +91,10 @@ void Workspace::addEditor(Editor* editor) {
 
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             &m_mainWindow, &QWidget::setWindowModified);
+
+    connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
+            [=](bool modified) { emit modifiedChanged(editor, modified); });
+
     emit editorOpened(editor);
 }
 
@@ -109,7 +113,10 @@ void Workspace::setCurrentEditor(Editor* editor) {
     }
 
     m_mainWindow.setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
+    m_mainWindow.setWindowModified(editor->qutepart().document()->isModified());
+
     m_widget->setCurrentWidget(&(editor->qutepart()));
+
     m_currentEditor = editor;
 
     emit currentEditorChanged(m_currentEditor);
