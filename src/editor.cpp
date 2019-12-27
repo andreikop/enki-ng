@@ -8,9 +8,14 @@
 
 Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent):
     m_filePath(filePath),
-    m_qutepart(text, parent)
+    m_qutepart(parent, text)
 {
-    m_qutepart.initHighlighter(m_filePath);
+    Qutepart::LangInfo langInfo = Qutepart::chooseLanguage(
+        QString::null, QString::null, filePath);
+    if (langInfo.isValid()) {
+        m_qutepart.setHighlighter(langInfo.id);
+        m_qutepart.setIndentAlgorithm(langInfo.indentAlg);
+    }
 }
 
 const QString& Editor::filePath() const {
