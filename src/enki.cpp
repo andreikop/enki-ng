@@ -5,23 +5,20 @@
 
 #include "qutepart/qutepart.h"
 
-#include "main_window.h"
-#include "workspace.h"
+#include "core.h"
 
 
 int main(int argc, char** argv) {
     Q_INIT_RESOURCE(qutepart_syntax_files);
     QApplication app(argc, argv);
 
-    MainWindow mainWindow;
-    Workspace workspace(mainWindow);
-
+    Core core;
     for (int fileIndex = 1; fileIndex < argc; fileIndex++) {
         QString filePath = argv[fileIndex];
-        workspace.openFile(filePath);
+        core.workspace()->openFile(filePath);
     }
 
-    mainWindow.show();
+    core.mainWindow()->show();
 
     return app.exec();
 }

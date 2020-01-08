@@ -16,7 +16,7 @@
 class Workspace: public QObject {
     Q_OBJECT
 public:
-    Workspace(MainWindow& mainWindow);
+    Workspace(MainWindow* mainWindow);
     virtual ~Workspace();
 
     void openFile(const QString& filePath, int line=-1);
@@ -31,7 +31,7 @@ signals:
 
 private:
     QStackedWidget* m_widget; // owned by the main window
-    QMainWindow& m_mainWindow;
+    QMainWindow* m_mainWindow;
 
     QList<Editor*> m_editors;
     Editor* m_currentEditor;

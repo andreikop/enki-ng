@@ -29,5 +29,11 @@ MenuBar::MenuBar(QMainWindow* parent):
 
     viewPrevFileAction = addActionToMenu(viewMenu, "Previous file", QKeySequence("Ctrl+PgUp"));
     viewNextFileAction = addActionToMenu(viewMenu, "Next file", QKeySequence("Ctrl+PgDown"));
+
+    QMenu* navigationMenu = addMenu("Navigation");
+    searchMenu_ = navigationMenu->addMenu("Search & Replace");
 }
 
+QMenu* MenuBar::searchMenu() const {
+    return searchMenu_;
+}

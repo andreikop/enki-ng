@@ -11,21 +11,21 @@
 #include "workspace.h"
 
 
-Workspace::Workspace(MainWindow& mainWindow):
-    m_widget(new QStackedWidget(&mainWindow)),
+Workspace::Workspace(MainWindow* mainWindow):
+    m_widget(new QStackedWidget(mainWindow)),
     m_mainWindow(mainWindow),
     m_currentEditor(nullptr)
 {
-    m_mainWindow.setCentralWidget(m_widget);
+    mainWindow->setWorkspace(m_widget);
 
-    new FileExplorer(&m_mainWindow, this);
+    new FileExplorer(m_mainWindow, this);
 
-    connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
-    connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
-    connect(mainWindow.menuBar()->fileCloseAction, &QAction::triggered, this, &Workspace::onFileClose);
+    connect(mainWindow->menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
+    connect(mainWindow->menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
+    connect(mainWindow->menuBar()->fileCloseAction, &QAction::triggered, this, &Workspace::onFileClose);
 
-    connect(mainWindow.menuBar()->viewPrevFileAction, &QAction::triggered, this, &Workspace::onPrevFile);
-    connect(mainWindow.menuBar()->viewNextFileAction, &QAction::triggered, this, &Workspace::onNextFile);
+    connect(mainWindow->menuBar()->viewPrevFileAction, &QAction::triggered, this, &Workspace::onPrevFile);
+    connect(mainWindow->menuBar()->viewNextFileAction, &QAction::triggered, this, &Workspace::onNextFile);
 }
 
 Workspace::~Workspace() {
@@ -50,7 +50,7 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
         return;
     }
 
-    Editor *editor = new Editor(canonicalPath, text, &m_mainWindow);
+    Editor *editor = new Editor(canonicalPath, text, m_mainWindow);
 
     addEditor(editor);
     setCurrentEditor(editor);
@@ -82,7 +82,7 @@ QString Workspace::readFile(const QString& filePath) {
 }
 
 void Workspace::showError(const QString& title, const QString& text) {
-    QMessageBox::critical(&m_mainWindow, title, text, QMessageBox::Ok);
+    QMessageBox::critical(m_mainWindow, title, text, QMessageBox::Ok);
 }
 
 void Workspace::addEditor(Editor* editor) {
@@ -90,7 +90,7 @@ void Workspace::addEditor(Editor* editor) {
     m_widget->addWidget(&editor->qutepart());
 
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
-            &m_mainWindow, &QWidget::setWindowModified);
+            m_mainWindow, &QWidget::setWindowModified);
 
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             [=](bool modified) { emit modifiedChanged(editor, modified); });
@@ -101,7 +101,7 @@ void Workspace::addEditor(Editor* editor) {
 void Workspace::removeEditor(Editor* editor) {
     emit editorClosed(editor);
     disconnect(editor->qutepart().document(), &QTextDocument::modificationChanged,
-            &m_mainWindow, &QWidget::setWindowModified);
+            m_mainWindow, &QWidget::setWindowModified);
 
     m_widget->removeWidget(&editor->qutepart());
     m_editors.removeOne(editor);
@@ -112,8 +112,8 @@ void Workspace::setCurrentEditor(Editor* editor) {
         return;
     }
 
-    m_mainWindow.setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
-    m_mainWindow.setWindowModified(editor->qutepart().document()->isModified());
+    m_mainWindow->setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
+    m_mainWindow->setWindowModified(editor->qutepart().document()->isModified());
 
     m_widget->setCurrentWidget(&(editor->qutepart()));
 
@@ -136,7 +136,7 @@ void Workspace::switchFile(int offset) {
 
 void Workspace::onFileOpen() {
     QStringList fileNames = QFileDialog::getOpenFileNames(
-        &m_mainWindow,
+        m_mainWindow,
         "Open files",
         QDir::currentPath());
 

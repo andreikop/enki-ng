@@ -18,7 +18,10 @@ public:
     QAction* viewPrevFileAction;
     QAction* viewNextFileAction;
 
+    QMenu* searchMenu() const;
+
 private:
 
     QAction* m_fileQuitAction;
+    QMenu* searchMenu_;
 };
