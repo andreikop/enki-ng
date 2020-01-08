@@ -5,7 +5,7 @@
 #include <QString>
 
 
-#include "qutepart.h"
+#include "qutepart/qutepart.h"
 
 #include "main_window.h"
 #include "editor.h"

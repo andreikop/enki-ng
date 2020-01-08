@@ -2,7 +2,7 @@
 
 #include <QMainWindow>
 
-#include "qutepart.h"
+#include "qutepart/qutepart.h"
 
 
 // File editor. Contains editor widget(Qutepart) instance and related information

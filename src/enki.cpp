@@ -3,7 +3,7 @@
 #include <QDebug>
 
 
-#include "qutepart.h"
+#include "qutepart/qutepart.h"
 
 #include "main_window.h"
 #include "workspace.h"
