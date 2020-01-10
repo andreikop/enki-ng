@@ -61,6 +61,14 @@ const QList<Editor*>& Workspace::editors() const {
     return m_editors;
 }
 
+Editor* Workspace::currentEditor() const {
+    if ( ! m_editors.isEmpty()) {
+        return m_editors.first();
+    } else {
+        return nullptr;
+    }
+}
+
 QString Workspace::readFile(const QString& filePath) {
     QFile file(filePath);
 

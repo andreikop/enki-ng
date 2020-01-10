@@ -22,6 +22,7 @@ public:
     void openFile(const QString& filePath, int line=-1);
 
     const QList<Editor*>& editors() const;
+    Editor* currentEditor() const;
 
 signals:
     void currentEditorChanged(Editor* editor);

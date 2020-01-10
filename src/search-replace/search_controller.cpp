@@ -3,24 +3,8 @@
 #include "core.h"
 
 #include "search_controller.h"
+#include "search_flags.h"
 
-
-namespace {
-
-const int MODE_FLAG_SEARCH = 0x1;
-const int MODE_FLAG_REPLACE = 0x2;
-const int MODE_FLAG_FILE = 0x4;
-const int MODE_FLAG_DIRECTORY = 0x8;
-const int MODE_FLAG_FILES = 0x10;
-
-const int MODE_SEARCH = MODE_FLAG_SEARCH | MODE_FLAG_FILE;
-const int MODE_REPLACE = MODE_FLAG_REPLACE | MODE_FLAG_FILE;
-const int MODE_SEARCH_DIRECTORY = MODE_FLAG_SEARCH | MODE_FLAG_DIRECTORY;
-const int MODE_REPLACE_DIRECTORY = MODE_FLAG_REPLACE | MODE_FLAG_DIRECTORY;
-const int MODE_SEARCH_OPENED_FILES = MODE_FLAG_SEARCH | MODE_FLAG_FILES;
-const int MODE_REPLACE_OPENED_FILES = MODE_FLAG_REPLACE | MODE_FLAG_FILES;
-
-};
 
 SearchController::SearchController() {
     createActions();

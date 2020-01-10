@@ -9,4 +9,7 @@ public:
     explicit SearchWidget();
 
     void setMode(int mode);
+
+private:
+    int mode_;
 };

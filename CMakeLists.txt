@@ -6,7 +6,7 @@ project(enki)
 set(CMAKE_AUTOMOC ON)
 SET(CMAKE_AUTOUIC ON)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Find the QtWidgets library
 find_package(Qt5Core CONFIG REQUIRED)
