@@ -1,3 +1,4 @@
+#include <QStatusBar>
 #include <QDebug>
 
 #include "core.h"
@@ -12,6 +13,10 @@ SearchController::SearchController():
     searchInFileStartPoint_(-1)
 {
     createActions();
+
+    connect(
+        core()->workspace(), &Workspace::currentEditorChanged,
+        this, &SearchController::updateFileActionsState);
 }
 
 
@@ -59,19 +64,19 @@ void SearchController::createActions() {
         "Search in the current file...");
     connect(searchAction_, &QAction::triggered, [this]{this->onModeSwitchTriggered(MODE_SEARCH);});
 
-    QAction* searchPrev  = createAction(
+    searchPrev_  = createAction(
         "Search &Previous",
         "previous.png", "Shift+F3",
         "Search previous occurrence",
         false);
-    connect(searchPrev, &QAction::triggered, this, &SearchController::onSearchPrevious);
+    connect(searchPrev_, &QAction::triggered, this, &SearchController::onSearchPrevious);
 
-    QAction* searchNext = createAction(
+    searchNext_ = createAction(
         "Search &Next",
         "next.png", "F3",
         "Search next occurrence",
         false);
-    connect(searchNext, &QAction::triggered, this, &SearchController::onSearchNext);
+    connect(searchNext_, &QAction::triggered, this, &SearchController::onSearchNext);
 #if 0
     createAction("aReplaceFile", "&Replace...",
                  "replace.png", "Ctrl+R",
@@ -102,6 +107,29 @@ void SearchController::createActions() {
                  "search-replace-opened-files.png", "Ctrl+Alt+R",
                  "Replace in opened files...",
                  self._onModeSwitchTriggered, MODE_REPLACE_OPENED_FILES)
+#endif
+}
+
+void SearchController::updateFileActionsState() {
+#if 0
+    valid, error = self._widget.isSearchRegExpValid()
+    valid = valid and len(self._widget.getRegExp().pattern) > 0  # valid and not empty
+#else
+    bool valid = true;
+#endif
+
+    bool haveDocument = core()->workspace()->currentEditor() != nullptr;
+    bool searchInFileAvailable = valid and haveDocument;
+
+#if 0
+    self._widget.setSearchInFileActionsEnabled(searchInFileAvailable)
+#endif
+    searchNext_->setEnabled(searchInFileAvailable);
+    searchPrev_->setEnabled(searchInFileAvailable);
+
+#if 0
+    core.actionManager().action("mNavigation/mSearchReplace/aSearchWordBackward").setEnabled(haveDocument)
+    core.actionManager().action("mNavigation/mSearchReplace/aSearchWordForward").setEnabled(haveDocument)
 #endif
 }
 
@@ -147,9 +175,7 @@ void SearchController::onSearchPrevious() {
 void SearchController::searchFile(Direction direction, IncrementalMode incremental) {
     Qutepart::Qutepart* qutepart = &core()->workspace()->currentEditor()->qutepart();
 
-#if 0
-    QRegularExpression regExp = widget->getRegExp();
-#endif
+    QRegularExpression regExp = searchWidget_->getRegExp();
 
     if (qutepart->textCursor().position() != searchInFileLastCursorPos_) {
         searchInFileStartPoint_ = -1;
@@ -170,24 +196,94 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
         }
     }
 
-#if 0
-    match, matches = self._searchInText(regExp, qutepart.text, self._searchInFileStartPoint, forward)
-    if match:
-        selectionStart, selectionEnd = match.start(), match.start() + len(match.group(0))
-        qutepart.absSelectedPosition = (selectionStart, selectionEnd)
-        self._searchInFileLastCursorPos = selectionEnd
-        self._widget.setState(self._widget.Good)  # change background acording to result
-        core.mainWindow().statusBar().showMessage('Match %d of %d' %
-                                                  (matches.index(match) + 1, len(matches)), 3000)
-    else:
-        self._widget.setState(self._widget.Bad)
-        qutepart.resetSelection()
-#endif
+    SearchController::SearchResult res = searchInText(qutepart, regExp, searchInFileStartPoint_, direction);
+
+    if (res.isValid()) {
+        qutepart->setTextCursor(res.cursor);
+        searchInFileLastCursorPos_ = res.cursor.anchor();
+        searchWidget_->setState(SearchWidget::GOOD);  // change background acording to result
+        core()->mainWindow()->statusBar()->showMessage(
+            QString("Match %1 of %2").arg(res.matchIndex + 1).arg(res.matchCount), 3000);
+    } else {
+        searchWidget_->setState(SearchWidget::BAD);
+
+        // Reset selection
+        QTextCursor cursor = qutepart->textCursor();
+        cursor.setPosition(cursor.position());
+        qutepart->setTextCursor(cursor);
+    }
+}
+
+QVector<SearchController::Match> SearchController::findAll(
+        Qutepart::Qutepart* qpart,
+        const QRegularExpression& regExp) const {
+    QTextCursor cursor = QTextCursor(qpart->document());
+    QVector<Match> result;
+
+    while (1) {
+        cursor = qpart->document()->find(regExp, cursor);
+        if (cursor == QTextCursor()) {
+            break;
+        } else {
+            result.append(Match(cursor.anchor(), cursor.position()));
+        }
+    }
+
+    return result;
+}
+
+int SearchController::chooseMatch(
+        const QVector<SearchController::Match>& matches,
+        int cursorPos,
+        SearchController::Direction direction) const {
+    int index = 0;
+    for(; index < matches.length(); index++) {
+        if (std::min(matches[index].start, matches[index].end) >= cursorPos) {
+            break;
+        }
+    }
+
+    // Now all items before index are less than pos
+
+    // wrap if reached end
+
+    if (direction == SearchController::BACKWARD) {
+        index--;
+    }
+
+    if (index == matches.length()) {
+        index = 0;
+    } else if (index < 0) {
+        index = matches.length() - 1;
+    }
+
+    return index;
 }
 
 SearchController::SearchResult SearchController::searchInText(
-        const QRegularExpression& regExp,
         Qutepart::Qutepart* qpart,
+        const QRegularExpression& regExp,
         int startPoint, Direction direction) {
-    // TODO
+    SearchController::SearchResult res;
+    QVector<Match> matches = findAll(qpart, regExp);
+
+    if ( ! matches.isEmpty()) {
+        int startPos = -1;
+        QTextCursor currentCursor = qpart->textCursor();
+        if (direction == FORWARD) {
+            startPos = std::max(currentCursor.position(), currentCursor.anchor());
+        } else {
+            startPos = std::min(currentCursor.position(), currentCursor.anchor());
+        }
+
+        res.matchIndex = chooseMatch(matches, startPos, direction);
+
+        res.cursor = qpart->textCursor();
+        res.cursor.setPosition(matches[res.matchIndex].start);
+        res.cursor.setPosition(matches[res.matchIndex].end, QTextCursor::KeepAnchor);
+
+        res.matchCount = matches.length();
+    }
+
+    return res;
 }

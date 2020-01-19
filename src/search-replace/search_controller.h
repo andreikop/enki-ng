@@ -32,20 +32,32 @@ private:
         NON_INCREMENTAL
     };
 
+    struct Match {
+        Match(int start, int end):
+            start(start),
+            end(end)
+        {};
+
+        Match():
+            start(-1),
+            end(-1)
+        {};
+
+        int start;
+        int end;
+    };
+
     struct SearchResult {
         SearchResult():
-            matchStart(-1),
-            matchEnd(-1),
             matchIndex(-1),
             matchCount(0)
         {}
 
         bool isValid() {
-            return matchStart != -1;
+            return cursor != QTextCursor();
         }
 
-        int matchStart;
-        int matchEnd;
+        QTextCursor cursor;
         int matchIndex;
         int matchCount;
     };
@@ -57,13 +69,19 @@ private:
         const QString& toolTip,
         bool enabled=true);
     void createActions();
+    void updateFileActionsState();
     void searchFile(Direction forward, IncrementalMode incremental);
+    QVector<Match> findAll(Qutepart::Qutepart* qpart, const QRegularExpression& regExp) const;
+    int chooseMatch(const QVector<Match>& matches, int cursorPos, SearchController::Direction direction) const;
     SearchResult searchInText(
-            const QRegularExpression& regExp,
             Qutepart::Qutepart* qpart,
+            const QRegularExpression& regExp,
             int startPoint, Direction direction);
 
     QAction* searchAction_;
+    QAction* searchPrev_;
+    QAction* searchNext_;
+
     int mode_;
     int searchInFileLastCursorPos_;
     int searchInFileStartPoint_;

@@ -160,6 +160,57 @@ void SearchWidget::updateComboBoxes() {
     addCurrentValToHistory(cbMask);
 }
 
+QRegularExpression SearchWidget::getRegExp() const {
+    QString pattern = cbSearch->currentText();
+
+    // replace unicode paragraph separator with habitual \n
+    pattern = pattern.replace("\u2029", "\n");
+
+    if ( ! cbRegularExpression->checkState() == Qt::Checked) {
+        pattern = QRegularExpression::escape(pattern);
+    }
+
+    if (cbWholeWord->checkState() == Qt::Checked) {
+        pattern = QString("\b" + pattern + "\b");
+    }
+
+    QRegularExpression::PatternOption flags = QRegularExpression::NoPatternOption;
+    if (cbCaseSensitive->checkState() != Qt::Checked) {
+        flags = QRegularExpression::CaseInsensitiveOption;
+    }
+
+    return QRegularExpression(pattern, flags);
+}
+
+void SearchWidget::setState(State state) {
+    QWidget* widget = cbSearch->lineEdit();
+
+    QColor color;
+
+    switch (state) {
+        case NORMAL:
+            color = QGuiApplication::palette().color(QPalette::Base);
+            break;
+        case GOOD:
+            color = Qt::green;
+            break;
+        case BAD:
+            color = Qt::red;
+            break;
+        case INCORRECT:
+            color = Qt::darkYellow;
+            break;
+    }
+
+    if (state != NORMAL) {
+        color.setAlpha(100);
+    }
+
+    QPalette pal = widget->palette();
+    pal.setColor(widget->backgroundRole(), color);
+    widget->setPalette(pal);
+}
+
 // Update 'Search' 'Replace' 'Path' labels geometry
 void SearchWidget::updateLabels() {
     int width = 0;
