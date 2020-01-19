@@ -6,13 +6,29 @@
 
 
 namespace {
-QString makeEscapeSeqsVisible(const QString& text) {
-    // TODO
-    return text;
+
+QString makeEscapeSeqsVisible(QString text) {
+    return text
+        .replace('\\', "\\\\")
+        .replace('\t', "\\t")
+        .replace('\n', "\\n");
 }
 
-QString regExEscape(const QString& text) {
-    // TODO
+/* Improved version of re.escape()
+Doesn't escape space, comma, underscore.
+Escapes \n and \t
+*/
+QString regExEscape(QString text) {
+    text = QRegularExpression::escape(text);
+
+    // re.escape escapes space, comma, underscore, but, it is not necessary and makes text not readable
+    foreach(QChar symbol, QString(" ,_=\'\"/:@#%&")) {
+        text = text.replace(QString("\\") + symbol, symbol);
+    }
+
+    text = text.replace("\\\n", "\\n");
+    text = text.replace("\\\t", "\\t");
+
     return text;
 }
 
