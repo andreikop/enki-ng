@@ -16,7 +16,7 @@ QString makeEscapeSeqsVisible(QString text) {
 }
 
 /* Improved version of re.escape()
-Doesn't escape space, comma, underscore.
+Doesn't escape space, comma, underscorer
 Escapes \n and \t
 */
 QString regExEscape(QString text) {
@@ -136,8 +136,68 @@ void SearchWidget::setMode(int mode) {
     // Finaly show all with valid size
     show();  // show before updating widgets and labels
 
-#if 0
-    self._updateLabels()
-    self._updateWidgets()
-#endif
+    updateLabels();
+    updateWidgets();
+}
+
+namespace {
+void addCurrentValToHistory(QComboBox* combo) {
+    QString text = combo->currentText();
+    if ( ! text.isEmpty()) {
+        int index = combo->findText(text);
+
+        if (index == -1) {
+            combo->addItem(text);
+        }
+    }
+}
+};
+
+// Update comboboxes with last used texts
+void SearchWidget::updateComboBoxes() {
+    addCurrentValToHistory(cbSearch);
+    addCurrentValToHistory(cbReplace);
+    addCurrentValToHistory(cbMask);
+}
+
+// Update 'Search' 'Replace' 'Path' labels geometry
+void SearchWidget::updateLabels() {
+    int width = 0;
+
+    if (lSearch->isVisible()) {
+        width = std::max(width, lSearch->minimumSizeHint().width());
+    }
+
+    if (lReplace->isVisible()) {
+        width = std::max(width, lReplace->minimumSizeHint().width());
+    }
+
+    if (lPath->isVisible()) {
+        width = std::max(width, lPath->minimumSizeHint().width());
+    }
+
+    lSearch->setMinimumWidth(width);
+    lReplace->setMinimumWidth(width);
+    lPath->setMinimumWidth(width);
+}
+
+// Update geometry of widgets with buttons
+void SearchWidget::updateWidgets() {
+    int width = 0;
+
+    if (wSearchRight->isVisible()) {
+        width = std::max(width, wSearchRight->minimumSizeHint().width());
+    }
+
+    if (wReplaceRight->isVisible()) {
+        width = std::max(width, wReplaceRight->minimumSizeHint().width());
+    }
+
+    if (wPathRight->isVisible()) {
+        width = std::max(width, wPathRight->minimumSizeHint().width());
+    }
+
+    wSearchRight->setMinimumWidth(width);
+    wReplaceRight->setMinimumWidth(width);
+    wPathRight->setMinimumWidth(width);
 }

@@ -6,7 +6,11 @@
 #include "search_flags.h"
 
 
-SearchController::SearchController() {
+SearchController::SearchController():
+    mode_(0),
+    searchInFileLastCursorPos_(-1),
+    searchInFileStartPoint_(-1)
+{
     createActions();
 }
 
@@ -121,18 +125,69 @@ void SearchController::onModeSwitchTriggered(int newMode) {
         if self._replaceThread is not None:
             self._replaceThread.stop()
 
-        self._mode = newMode
 
         if self._dock is not None:
             self._dock.setReplaceMode(self._mode == MODE_REPLACE_DIRECTORY or
                                       self._mode == MODE_REPLACE_OPENED_FILES)
 #endif
+    mode_ = newMode;
 }
 
+// Search Next clicked
 void SearchController::onSearchNext() {
-
+    searchWidget_->updateComboBoxes();
+    searchFile(FORWARD, NON_INCREMENTAL);
 }
 
 void SearchController::onSearchPrevious() {
+    searchWidget_->updateComboBoxes();
+    searchFile(BACKWARD, INCREMENTAL);
+}
 
+void SearchController::searchFile(Direction direction, IncrementalMode incremental) {
+    Qutepart::Qutepart* qutepart = &core()->workspace()->currentEditor()->qutepart();
+
+#if 0
+    QRegularExpression regExp = widget->getRegExp();
+#endif
+
+    if (qutepart->textCursor().position() != searchInFileLastCursorPos_) {
+        searchInFileStartPoint_ = -1;
+    }
+
+    if (searchInFileStartPoint_ != -1 || ( ! incremental == INCREMENTAL)) {
+        // get cursor position
+        QTextCursor cursor = qutepart->textCursor();
+
+        if (direction == FORWARD) {
+            if (incremental == INCREMENTAL) {
+                searchInFileStartPoint_ = cursor.selectionStart();
+            } else {
+                searchInFileStartPoint_ = cursor.selectionEnd();
+            }
+        } else {
+            searchInFileStartPoint_ = cursor.selectionStart();
+        }
+    }
+
+#if 0
+    match, matches = self._searchInText(regExp, qutepart.text, self._searchInFileStartPoint, forward)
+    if match:
+        selectionStart, selectionEnd = match.start(), match.start() + len(match.group(0))
+        qutepart.absSelectedPosition = (selectionStart, selectionEnd)
+        self._searchInFileLastCursorPos = selectionEnd
+        self._widget.setState(self._widget.Good)  # change background acording to result
+        core.mainWindow().statusBar().showMessage('Match %d of %d' %
+                                                  (matches.index(match) + 1, len(matches)), 3000)
+    else:
+        self._widget.setState(self._widget.Bad)
+        qutepart.resetSelection()
+#endif
+}
+
+SearchController::SearchResult SearchController::searchInText(
+        const QRegularExpression& regExp,
+        Qutepart::Qutepart* qpart,
+        int startPoint, Direction direction) {
+    // TODO
 }

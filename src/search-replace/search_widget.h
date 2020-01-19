@@ -9,7 +9,11 @@ public:
     explicit SearchWidget();
 
     void setMode(int mode);
+    void updateComboBoxes();
 
 private:
     int mode_;
+
+    void updateLabels();
+    void updateWidgets();
 };
