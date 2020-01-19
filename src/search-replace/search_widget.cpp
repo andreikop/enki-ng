@@ -1,3 +1,4 @@
+#include <QDir>
 #include <QLineEdit>
 
 #include "core.h"
@@ -79,33 +80,51 @@ void SearchWidget::setMode(int mode) {
     cbSearch->setFocus();
     cbSearch->lineEdit()->selectAll();
 
-#if 0
     // Set search path
     if (mode & MODE_FLAG_DIRECTORY &&
         ( ! (isVisible() && cbPath->isVisible()))) {
 
-        try:
-            searchPath = os.path.abspath(str(os.path.curdir))
-        except OSError:  # current directory might have been deleted
-            pass
-        else:
-            self.cbPath.setEditText(searchPath)
+        QString searchPath = QDir::currentPath();
+        if ( ! searchPath.isEmpty()) {  // could be empty if current dir was deleted
+            cbPath->setEditText(searchPath);
+        }
     }
-    # Set widgets visibility flag according to state
-    widgets = (self.wSearch, self.pbPrevious, self.pbNext, self.pbSearch, self.wReplace, self.wPath,
-               self.pbReplace, self.pbReplaceAll, self.pbReplaceChecked, self.wOptions, self.wMask)
-    #                         wSear  pbPrev pbNext pbSear wRepl  wPath  pbRep  pbRAll pbRCHK wOpti wMask
-    visible = \
-        {MODE_SEARCH:               (1,     1,     1,     0,     0,     0,     0,     1,     1,    1,    0,),
-         MODE_REPLACE:               (1,     1,     1,     0,     1,     0,     1,     1,     0,    1,    0,),
-         MODE_SEARCH_DIRECTORY:      (1,     0,     0,     1,     0,     1,     0,     0,     0,    1,    1,),
-         MODE_REPLACE_DIRECTORY:     (1,     0,     0,     1,     1,     1,     0,     0,     1,    1,    1,),
-         MODE_SEARCH_OPENED_FILES:   (1,     0,     0,     1,     0,     0,     0,     0,     0,    1,    1,),
-         MODE_REPLACE_OPENED_FILES:  (1,     0,     0,     1,     1,     0,     0,     0,     1,    1,    1,)}
 
-    for i, widget in enumerate(widgets):
-        widget.setVisible(visible[mode][i])
-#endif
+    QVector<int> flags;
+    //               wSear  pbPrev pbNext pbSear wRepl  wPath  pbRep  pbRAll pbRCHK wOpti wMask
+    switch (mode) {
+        case MODE_SEARCH:
+            flags = {1,     1,     1,     0,     0,     0,     0,     1,     1,    1,    0};
+        break;
+        case MODE_REPLACE:
+            flags = {1,     1,     1,     0,     1,     0,     1,     1,     0,    1,    0};
+        break;
+        case MODE_SEARCH_DIRECTORY:
+            flags = {1,     0,     0,     1,     0,     1,     0,     0,     0,    1,    1};
+        break;
+        case MODE_REPLACE_DIRECTORY:
+            flags = {1,     0,     0,     1,     1,     1,     0,     0,     1,    1,    1};
+        break;
+        case MODE_SEARCH_OPENED_FILES:
+            flags = {1,     0,     0,     1,     0,     0,     0,     0,     0,    1,    1};
+        break;
+        case MODE_REPLACE_OPENED_FILES:
+            flags = {1,     0,     0,     1,     1,     0,     0,     0,     1,    1,    1};
+        break;
+    }
+
+    // Set widgets visibility flag according to state
+    wSearch->setVisible(flags[0]);
+    pbPrevious->setVisible(flags[1]);
+    pbNext->setVisible(flags[2]);
+    pbSearch->setVisible(flags[3]);
+    wReplace->setVisible(flags[4]);
+    wPath->setVisible(flags[5]);
+    pbReplace->setVisible(flags[6]);
+    pbReplaceAll->setVisible(flags[7]);
+    pbReplaceChecked->setVisible(flags[8]);
+    wOptions->setVisible(flags[9]);
+    wMask->setVisible(flags[10]);
 
     // Search next button text
     if (mode == MODE_REPLACE) {
