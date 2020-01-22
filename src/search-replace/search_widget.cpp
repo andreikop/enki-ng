@@ -1,5 +1,8 @@
 #include <QDir>
 #include <QLineEdit>
+#include <QStatusBar>
+#include <QCheckBox>
+#include <QDebug>
 
 #include "core.h"
 #include "search_widget.h"
@@ -38,6 +41,16 @@ QString regExEscape(QString text) {
 SearchWidget::SearchWidget():
     QFrame(core()->mainWindow()) {
     setupUi(this);
+
+    connect(cbSearch->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
+    connect(cbReplace->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
+    connect(cbPath->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
+    connect(cbMask->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
+
+    connect(cbSearch->lineEdit(), &QLineEdit::textChanged, this, &SearchWidget::onSearchRegExpChanged);
+    connect(cbRegularExpression, &QCheckBox::stateChanged, this, &SearchWidget::onSearchRegExpChanged);
+    connect(cbCaseSensitive, &QCheckBox::stateChanged, this, &SearchWidget::onSearchRegExpChanged);
+    connect(cbWholeWord, &QCheckBox::stateChanged, this, &SearchWidget::onSearchRegExpChanged);
 }
 
 /* Change search mode.
@@ -209,6 +222,48 @@ void SearchWidget::setState(State state) {
     QPalette pal = widget->palette();
     pal.setColor(widget->backgroundRole(), color);
     widget->setPalette(pal);
+}
+
+/* Return or Enter pressed on widget.
+Search next or Replace next
+*/
+void SearchWidget::onReturnPressed() {
+#if 0
+    if (pbReplace->isVisible()) {
+        pbReplace->click();
+    } else
+#endif
+    if (pbNext->isVisible()) {
+        emit(searchNext());
+    }
+#if 0
+     else if (pbSearch.isVisible()) {
+        pbSearch->click();
+    } else if (pbSearchStop->isVisible()) {
+        pbSearchStop.click();
+    }
+#endif
+}
+
+void SearchWidget::onSearchRegExpChanged() {
+
+qDebug() << "reg exp changed on widget";
+    QRegularExpression regExp = getRegExp();
+
+    if (regExp.isValid()) {
+        qDebug() << "valid";
+        setState(NORMAL);
+        core()->mainWindow()->statusBar()->clearMessage();
+        pbSearch->setEnabled( ! regExp.pattern().isEmpty());
+        emit(searchRegExpChanged(regExp));
+    } else {
+        qDebug() << "invalid";
+        core()->mainWindow()->statusBar()->showMessage(regExp.errorString(), 3000);
+        setState(INCORRECT);
+        pbSearch->setEnabled(false);
+        emit(searchRegExpChanged(QRegularExpression("")));
+        return;
+    }
 }
 
 // Update 'Search' 'Replace' 'Path' labels geometry

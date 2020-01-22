@@ -18,6 +18,7 @@ public:
 
 private slots:
     void onModeSwitchTriggered(int mode);
+    void onRegExpChanged(const QRegularExpression& regExp);
     void onSearchNext();
     void onSearchPrevious();
 
@@ -69,6 +70,7 @@ private:
         const QString& toolTip,
         bool enabled=true);
     void createActions();
+    void createSearchWidget();
     void updateFileActionsState();
     void searchFile(Direction forward, IncrementalMode incremental);
     QVector<Match> findAll(Qutepart::Qutepart* qpart, const QRegularExpression& regExp) const;

@@ -135,9 +135,7 @@ void SearchController::updateFileActionsState() {
 
 void SearchController::onModeSwitchTriggered(int newMode) {
     if ( ! bool(searchWidget_)) {
-        searchWidget_ = std::make_unique<SearchWidget>();
-        core()->mainWindow()->setSearchWidget(searchWidget_.get());
-        searchWidget_->setVisible(false);
+        createSearchWidget();
     }
 
     if (newMode & MODE_FLAG_FILES &&
@@ -161,6 +159,29 @@ void SearchController::onModeSwitchTriggered(int newMode) {
     mode_ = newMode;
 }
 
+void SearchController::createSearchWidget() {
+    searchWidget_ = std::make_unique<SearchWidget>();
+    core()->mainWindow()->setSearchWidget(searchWidget_.get());
+
+    connect(searchWidget_.get(), &SearchWidget::searchNext, this, &SearchController::onSearchNext);
+    connect(searchWidget_.get(), &SearchWidget::searchRegExpChanged,
+            this, &SearchController::onRegExpChanged);
+
+    searchWidget_->setVisible(false);
+}
+
+// Search regExp changed. Do incremental search
+void SearchController::onRegExpChanged(const QRegularExpression& regExp) {
+    if ( (mode_ == MODE_SEARCH || mode_ == MODE_REPLACE) &&
+         core()->workspace()->currentEditor() != nullptr) {
+        if (regExp.pattern().isEmpty()) {
+            core()->workspace()->currentEditor()->qutepart().resetSelection();
+        } else {  // Clear selection
+            searchFile(FORWARD, INCREMENTAL);
+        }
+    }
+}
+
 // Search Next clicked
 void SearchController::onSearchNext() {
     searchWidget_->updateComboBoxes();
@@ -181,7 +202,7 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
         searchInFileStartPoint_ = -1;
     }
 
-    if (searchInFileStartPoint_ != -1 || ( ! incremental == INCREMENTAL)) {
+    if (searchInFileStartPoint_ == -1 || ( incremental != INCREMENTAL)) {
         // get cursor position
         QTextCursor cursor = qutepart->textCursor();
 
@@ -208,9 +229,7 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
         searchWidget_->setState(SearchWidget::BAD);
 
         // Reset selection
-        QTextCursor cursor = qutepart->textCursor();
-        cursor.setPosition(cursor.position());
-        qutepart->setTextCursor(cursor);
+        qutepart->resetSelection();
     }
 }
 
@@ -238,7 +257,7 @@ int SearchController::chooseMatch(
         SearchController::Direction direction) const {
     int index = 0;
     for(; index < matches.length(); index++) {
-        if (std::min(matches[index].start, matches[index].end) >= cursorPos) {
+        if (matches[index].start, matches[index].end >= cursorPos) {
             break;
         }
     }
