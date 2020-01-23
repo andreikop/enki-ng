@@ -5,10 +5,10 @@
 
 class Core {
 public:
-    Workspace* workspace() const;
-    MainWindow* mainWindow() const;
+    Workspace& workspace() const;
+    MainWindow& mainWindow() const;
 
-    friend Core* core();
+    friend Core& core();
     friend int main(int argc, char** argv);
 
 private:
@@ -24,4 +24,4 @@ private:
 };
 
 // Conveniensce function wich returns core instance
-Core* core();
+Core& core();

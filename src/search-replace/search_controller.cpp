@@ -15,7 +15,7 @@ SearchController::SearchController():
     createActions();
 
     connect(
-        core()->workspace(), &Workspace::currentEditorChanged,
+        &core().workspace(), &Workspace::currentEditorChanged,
         this, &SearchController::updateFileActionsState);
 }
 
@@ -30,7 +30,7 @@ QAction* SearchController::createAction(
         const QString& shortcut,
         const QString& toolTip,
         bool enabled) {
-    QMenu* searchMenu = core()->mainWindow()->menuBar()->searchMenu();
+    QMenu* searchMenu = core().mainWindow().menuBar()->searchMenu();
     QAction* action = searchMenu->addAction(text);
     if ( ! shortcut.isNull()) {
         action->setShortcut(shortcut);
@@ -118,7 +118,7 @@ void SearchController::updateFileActionsState() {
     bool valid = true;
 #endif
 
-    bool haveDocument = core()->workspace()->currentEditor() != nullptr;
+    bool haveDocument = core().workspace().currentEditor() != nullptr;
     bool searchInFileAvailable = valid and haveDocument;
 
 #if 0
@@ -139,7 +139,7 @@ void SearchController::onModeSwitchTriggered(int newMode) {
     }
 
     if (newMode & MODE_FLAG_FILES &&
-        core()->workspace()->editors().isEmpty()) {
+        core().workspace().editors().isEmpty()) {
             return;
     }
 
@@ -161,7 +161,7 @@ void SearchController::onModeSwitchTriggered(int newMode) {
 
 void SearchController::createSearchWidget() {
     searchWidget_ = std::make_unique<SearchWidget>();
-    core()->mainWindow()->setSearchWidget(searchWidget_.get());
+    core().mainWindow().setSearchWidget(searchWidget_.get());
 
     connect(searchWidget_.get(), &SearchWidget::searchNext, this, &SearchController::onSearchNext);
     connect(searchWidget_.get(), &SearchWidget::searchRegExpChanged,
@@ -173,12 +173,12 @@ void SearchController::createSearchWidget() {
 // Search regExp changed. Do incremental search
 void SearchController::onRegExpChanged(const QRegularExpression& regExp) {
     if ( ! regExp.isValid()) {
-        core()->mainWindow()->statusBar()->showMessage(regExp.errorString(), 3000);
+        core().mainWindow().statusBar()->showMessage(regExp.errorString(), 3000);
         searchWidget_->setState(SearchWidget::INCORRECT);
     } else if ( (mode_ == MODE_SEARCH || mode_ == MODE_REPLACE) &&
-               core()->workspace()->currentEditor() != nullptr) {
+               core().workspace().currentEditor() != nullptr) {
         if (regExp.pattern().isEmpty()) {
-            core()->workspace()->currentEditor()->qutepart().resetSelection();
+            core().workspace().currentEditor()->qutepart().resetSelection();
         } else {  // Clear selection
             searchFile(FORWARD, INCREMENTAL);
         }
@@ -197,7 +197,7 @@ void SearchController::onSearchPrevious() {
 }
 
 void SearchController::searchFile(Direction direction, IncrementalMode incrementalMode) {
-    Qutepart::Qutepart* qutepart = &core()->workspace()->currentEditor()->qutepart();
+    Qutepart::Qutepart* qutepart = &core().workspace().currentEditor()->qutepart();
 
     QRegularExpression regExp = searchWidget_->getRegExp();
 
@@ -226,7 +226,7 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
         qutepart->setTextCursor(res.cursor);
         searchInFileLastCursorPos_ = res.cursor.position();
         searchWidget_->setState(SearchWidget::GOOD);  // change background acording to result
-        core()->mainWindow()->statusBar()->showMessage(
+        core().mainWindow().statusBar()->showMessage(
             QString("Match %1 of %2").arg(res.matchIndex + 1).arg(res.matchCount), 3000);
     } else {
         searchWidget_->setState(SearchWidget::BAD);

@@ -22,14 +22,14 @@ Core::~Core() {
     delete mainWindow_;
 }
 
-MainWindow* Core::mainWindow() const {
-    return mainWindow_;
+MainWindow& Core::mainWindow() const {
+    return *mainWindow_;
 }
 
-Workspace* Core::workspace() const {
-    return workspace_;
+Workspace& Core::workspace() const {
+    return *workspace_;
 }
 
-Core* core() {
-    return Core::instance_;
+Core& core() {
+    return *Core::instance_;
 }

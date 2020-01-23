@@ -15,10 +15,10 @@ int main(int argc, char** argv) {
     Core core;
     for (int fileIndex = 1; fileIndex < argc; fileIndex++) {
         QString filePath = argv[fileIndex];
-        core.workspace()->openFile(filePath);
+        core.workspace().openFile(filePath);
     }
 
-    core.mainWindow()->show();
+    core.mainWindow().show();
 
     return app.exec();
 }

@@ -40,7 +40,7 @@ QString regExEscape(QString text) {
 }; // anonymous namespace
 
 SearchWidget::SearchWidget():
-    QFrame(core()->mainWindow()) {
+    QFrame(&core().mainWindow()) {
     setupUi(this);
     cbSearch->lineEdit()->setCompleter(nullptr);
 
@@ -48,7 +48,7 @@ SearchWidget::SearchWidget():
     QShortcut* closeShortcut = new QShortcut(QKeySequence("Esc"), this);
     closeShortcut->setContext(Qt::WidgetWithChildrenShortcut);
     connect(closeShortcut, &QShortcut::activated, this, &SearchWidget::hide);
-    connect(closeShortcut, &QShortcut::activated, core()->workspace(), &Workspace::focusCurrentEditor);
+    connect(closeShortcut, &QShortcut::activated, &core().workspace(), &Workspace::focusCurrentEditor);
 
     connect(cbSearch->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
     connect(cbReplace->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
@@ -65,7 +65,7 @@ SearchWidget::SearchWidget():
 i.e. from "Search file" to "Replace directory"
 */
 void SearchWidget::setMode(int mode) {
-    Editor* editor = core()->workspace()->currentEditor();
+    Editor* editor = core().workspace().currentEditor();
     if (mode_ == mode && isVisible()) {
         if (editor != nullptr &&
             (! editor->qutepart().hasFocus())) {
