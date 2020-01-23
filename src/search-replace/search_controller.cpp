@@ -172,8 +172,11 @@ void SearchController::createSearchWidget() {
 
 // Search regExp changed. Do incremental search
 void SearchController::onRegExpChanged(const QRegularExpression& regExp) {
-    if ( (mode_ == MODE_SEARCH || mode_ == MODE_REPLACE) &&
-         core()->workspace()->currentEditor() != nullptr) {
+    if ( ! regExp.isValid()) {
+        core()->mainWindow()->statusBar()->showMessage(regExp.errorString(), 3000);
+        searchWidget_->setState(SearchWidget::INCORRECT);
+    } else if ( (mode_ == MODE_SEARCH || mode_ == MODE_REPLACE) &&
+               core()->workspace()->currentEditor() != nullptr) {
         if (regExp.pattern().isEmpty()) {
             core()->workspace()->currentEditor()->qutepart().resetSelection();
         } else {  // Clear selection
@@ -190,10 +193,10 @@ void SearchController::onSearchNext() {
 
 void SearchController::onSearchPrevious() {
     searchWidget_->updateComboBoxes();
-    searchFile(BACKWARD, INCREMENTAL);
+    searchFile(BACKWARD, NON_INCREMENTAL);
 }
 
-void SearchController::searchFile(Direction direction, IncrementalMode incremental) {
+void SearchController::searchFile(Direction direction, IncrementalMode incrementalMode) {
     Qutepart::Qutepart* qutepart = &core()->workspace()->currentEditor()->qutepart();
 
     QRegularExpression regExp = searchWidget_->getRegExp();
@@ -202,12 +205,12 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
         searchInFileStartPoint_ = -1;
     }
 
-    if (searchInFileStartPoint_ == -1 || ( incremental != INCREMENTAL)) {
+    if (searchInFileStartPoint_ == -1 || (incrementalMode == NON_INCREMENTAL)) {
         // get cursor position
         QTextCursor cursor = qutepart->textCursor();
 
         if (direction == FORWARD) {
-            if (incremental == INCREMENTAL) {
+            if (incrementalMode == INCREMENTAL) {
                 searchInFileStartPoint_ = cursor.selectionStart();
             } else {
                 searchInFileStartPoint_ = cursor.selectionEnd();
@@ -221,7 +224,7 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
 
     if (res.isValid()) {
         qutepart->setTextCursor(res.cursor);
-        searchInFileLastCursorPos_ = res.cursor.anchor();
+        searchInFileLastCursorPos_ = res.cursor.position();
         searchWidget_->setState(SearchWidget::GOOD);  // change background acording to result
         core()->mainWindow()->statusBar()->showMessage(
             QString("Match %1 of %2").arg(res.matchIndex + 1).arg(res.matchCount), 3000);
@@ -257,7 +260,7 @@ int SearchController::chooseMatch(
         SearchController::Direction direction) const {
     int index = 0;
     for(; index < matches.length(); index++) {
-        if (matches[index].start, matches[index].end >= cursorPos) {
+        if (matches[index].start, matches[index].end > cursorPos) {
             break;
         }
     }
@@ -287,15 +290,7 @@ SearchController::SearchResult SearchController::searchInText(
     QVector<Match> matches = findAll(qpart, regExp);
 
     if ( ! matches.isEmpty()) {
-        int startPos = -1;
-        QTextCursor currentCursor = qpart->textCursor();
-        if (direction == FORWARD) {
-            startPos = std::max(currentCursor.position(), currentCursor.anchor());
-        } else {
-            startPos = std::min(currentCursor.position(), currentCursor.anchor());
-        }
-
-        res.matchIndex = chooseMatch(matches, startPos, direction);
+        res.matchIndex = chooseMatch(matches, startPoint, direction);
 
         res.cursor = qpart->textCursor();
         res.cursor.setPosition(matches[res.matchIndex].start);

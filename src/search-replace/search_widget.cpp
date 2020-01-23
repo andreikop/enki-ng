@@ -41,6 +41,7 @@ QString regExEscape(QString text) {
 SearchWidget::SearchWidget():
     QFrame(core()->mainWindow()) {
     setupUi(this);
+    cbSearch->lineEdit()->setCompleter(nullptr);
 
     connect(cbSearch->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
     connect(cbReplace->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
@@ -219,6 +220,12 @@ void SearchWidget::setState(State state) {
         color.setAlpha(100);
     }
 
+    if (state == INCORRECT) {
+        pbSearch->setEnabled(false);
+    } else {
+        pbSearch->setEnabled( ! cbSearch->lineEdit()->text().isEmpty());
+    }
+
     QPalette pal = widget->palette();
     pal.setColor(widget->backgroundRole(), color);
     widget->setPalette(pal);
@@ -246,24 +253,15 @@ void SearchWidget::onReturnPressed() {
 }
 
 void SearchWidget::onSearchRegExpChanged() {
-
-qDebug() << "reg exp changed on widget";
     QRegularExpression regExp = getRegExp();
 
     if (regExp.isValid()) {
-        qDebug() << "valid";
-        setState(NORMAL);
-        core()->mainWindow()->statusBar()->clearMessage();
         pbSearch->setEnabled( ! regExp.pattern().isEmpty());
-        emit(searchRegExpChanged(regExp));
     } else {
-        qDebug() << "invalid";
-        core()->mainWindow()->statusBar()->showMessage(regExp.errorString(), 3000);
-        setState(INCORRECT);
         pbSearch->setEnabled(false);
-        emit(searchRegExpChanged(QRegularExpression("")));
-        return;
     }
+
+    emit(searchRegExpChanged(regExp));
 }
 
 // Update 'Search' 'Replace' 'Path' labels geometry
