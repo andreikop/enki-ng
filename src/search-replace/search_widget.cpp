@@ -2,6 +2,7 @@
 #include <QLineEdit>
 #include <QStatusBar>
 #include <QCheckBox>
+#include <QShortcut>
 #include <QDebug>
 
 #include "core.h"
@@ -42,6 +43,12 @@ SearchWidget::SearchWidget():
     QFrame(core()->mainWindow()) {
     setupUi(this);
     cbSearch->lineEdit()->setCompleter(nullptr);
+
+
+    QShortcut* closeShortcut = new QShortcut(QKeySequence("Esc"), this);
+    closeShortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(closeShortcut, &QShortcut::activated, this, &SearchWidget::hide);
+    connect(closeShortcut, &QShortcut::activated, core()->workspace(), &Workspace::focusCurrentEditor);
 
     connect(cbSearch->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
     connect(cbReplace->lineEdit(), &QLineEdit::returnPressed, this, &SearchWidget::onReturnPressed);
@@ -180,7 +187,7 @@ QRegularExpression SearchWidget::getRegExp() const {
     // replace unicode paragraph separator with habitual \n
     pattern = pattern.replace("\u2029", "\n");
 
-    if ( ! cbRegularExpression->checkState() == Qt::Checked) {
+    if ( cbRegularExpression->checkState() != Qt::Checked) {
         pattern = QRegularExpression::escape(pattern);
     }
 
