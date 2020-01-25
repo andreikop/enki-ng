@@ -164,20 +164,20 @@ void SearchController::createSearchWidget() {
     core().mainWindow().setSearchWidget(searchWidget_.get());
 
     connect(searchWidget_.get(), &SearchWidget::searchNext, this, &SearchController::onSearchNext);
-    connect(searchWidget_.get(), &SearchWidget::searchRegExpChanged,
-            this, &SearchController::onRegExpChanged);
+    connect(searchWidget_.get(), &SearchWidget::searchPatternChanged,
+            this, &SearchController::onSearchPatternChanged);
 
     searchWidget_->setVisible(false);
 }
 
 // Search regExp changed. Do incremental search
-void SearchController::onRegExpChanged(const QRegularExpression& regExp) {
-    if ( ! regExp.isValid()) {
-        core().mainWindow().statusBar()->showMessage(regExp.errorString(), 3000);
+void SearchController::onSearchPatternChanged(const SearchPattern& pattern) {
+    if ( ! pattern.isValid()) {
+        core().mainWindow().statusBar()->showMessage(pattern.regExp().errorString(), 3000);
         searchWidget_->setState(SearchWidget::INCORRECT);
     } else if ( (mode_ == MODE_SEARCH || mode_ == MODE_REPLACE) &&
                core().workspace().currentEditor() != nullptr) {
-        if (regExp.pattern().isEmpty()) {
+        if (pattern.isEmpty()) {
             core().workspace().currentEditor()->qutepart().resetSelection();
         } else {  // Clear selection
             searchFile(FORWARD, INCREMENTAL);
@@ -199,8 +199,34 @@ void SearchController::onSearchPrevious() {
 void SearchController::searchFile(Direction direction, IncrementalMode incrementalMode) {
     Qutepart::Qutepart* qutepart = &core().workspace().currentEditor()->qutepart();
 
-    QRegularExpression regExp = searchWidget_->getRegExp();
+    SearchPattern pattern = searchWidget_->getSearchPattern();
 
+    // Choose start point
+    updateSearchStartPoint(qutepart, direction, incrementalMode);
+
+    // Search
+    SearchController::SearchResult res = searchInText(qutepart, pattern, searchInFileStartPoint_, direction);
+
+    // Show results
+    if (res.isValid()) {
+        qutepart->setTextCursor(res.cursor);
+        searchInFileLastCursorPos_ = res.cursor.position();
+        searchWidget_->setState(SearchWidget::GOOD);  // change background acording to result
+        core().mainWindow().statusBar()->showMessage(
+            QString("Match %1 of %2").arg(res.matchIndex + 1).arg(res.matchCount), 3000);
+    } else {
+        searchWidget_->setState(SearchWidget::BAD);
+
+        // Reset selection
+        qutepart->resetSelection();
+    }
+}
+
+// Choose start point from which search started
+int SearchController::updateSearchStartPoint(
+        Qutepart::Qutepart* qutepart,
+        Direction direction,
+        IncrementalMode incrementalMode) {
     if (qutepart->textCursor().position() != searchInFileLastCursorPos_) {
         searchInFileStartPoint_ = -1;
     }
@@ -219,29 +245,42 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
             searchInFileStartPoint_ = cursor.selectionStart();
         }
     }
-
-    SearchController::SearchResult res = searchInText(qutepart, regExp, searchInFileStartPoint_, direction);
-
-    if (res.isValid()) {
-        qutepart->setTextCursor(res.cursor);
-        searchInFileLastCursorPos_ = res.cursor.position();
-        searchWidget_->setState(SearchWidget::GOOD);  // change background acording to result
-        core().mainWindow().statusBar()->showMessage(
-            QString("Match %1 of %2").arg(res.matchIndex + 1).arg(res.matchCount), 3000);
-    } else {
-        searchWidget_->setState(SearchWidget::BAD);
-
-        // Reset selection
-        qutepart->resetSelection();
-    }
 }
 
-QVector<SearchController::Match> SearchController::findAll(
+QVector<SearchController::Match> SearchController::findAllQuick(
         Qutepart::Qutepart* qpart,
-        const QRegularExpression& regExp) const {
+        const SearchPattern& pattern) const {
     QTextCursor cursor = QTextCursor(qpart->document());
     QVector<Match> result;
 
+    QTextDocument::FindFlags qTexDocFlags;
+    if (pattern.flags & SearchPattern::WHOLE_WORD) {
+        qTexDocFlags.setFlag(QTextDocument::FindWholeWords);
+    }
+    if (pattern.flags & SearchPattern::CASE_SENSITIVE) {
+        qTexDocFlags.setFlag(QTextDocument::FindCaseSensitively);
+    }
+
+    while (1) {
+        cursor = qpart->document()->find(pattern.text, cursor, qTexDocFlags);
+        if (cursor == QTextCursor()) {
+            break;
+        } else {
+            result.append(Match(cursor.anchor(), cursor.position()));
+        }
+    }
+
+    return result;
+}
+
+QVector<SearchController::Match> SearchController::findAllRegExp(
+        Qutepart::Qutepart* qpart,
+        const SearchPattern& pattern) const {
+    QRegularExpression regExp = pattern.regExp();
+    QVector<Match> result;
+
+    // FIXME get whole document text and search in it to find multiline patterns
+    QTextCursor cursor = QTextCursor(qpart->document());
     while (1) {
         cursor = qpart->document()->find(regExp, cursor);
         if (cursor == QTextCursor()) {
@@ -284,11 +323,17 @@ int SearchController::chooseMatch(
 
 SearchController::SearchResult SearchController::searchInText(
         Qutepart::Qutepart* qpart,
-        const QRegularExpression& regExp,
+        const SearchPattern& pattern,
         int startPoint, Direction direction) {
-    SearchController::SearchResult res;
-    QVector<Match> matches = findAll(qpart, regExp);
+    QVector<Match> matches;
 
+    if (pattern.flags & SearchPattern::REG_EXP) {
+        matches = findAllRegExp(qpart, pattern);
+    } else {
+        matches = findAllQuick(qpart, pattern);
+    }
+
+    SearchController::SearchResult res;
     if ( ! matches.isEmpty()) {
         res.matchIndex = chooseMatch(matches, startPoint, direction);
 

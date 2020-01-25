@@ -18,7 +18,7 @@ public:
 
 private slots:
     void onModeSwitchTriggered(int mode);
-    void onRegExpChanged(const QRegularExpression& regExp);
+    void onSearchPatternChanged(const SearchPattern& regExp);
     void onSearchNext();
     void onSearchPrevious();
 
@@ -73,11 +73,17 @@ private:
     void createSearchWidget();
     void updateFileActionsState();
     void searchFile(Direction forward, IncrementalMode incremental);
-    QVector<Match> findAll(Qutepart::Qutepart* qpart, const QRegularExpression& regExp) const;
+    QVector<Match> findAllQuick(Qutepart::Qutepart* qpart, const SearchPattern& pattern) const;
+    QVector<Match> findAllRegExp(Qutepart::Qutepart* qpart, const SearchPattern& pattern) const;
     int chooseMatch(const QVector<Match>& matches, int cursorPos, SearchController::Direction direction) const;
+
+    int updateSearchStartPoint(
+        Qutepart::Qutepart* qutepart,
+        Direction direction,
+        IncrementalMode incrementalMode);
     SearchResult searchInText(
             Qutepart::Qutepart* qpart,
-            const QRegularExpression& regExp,
+            const SearchPattern& pattern,
             int startPoint, Direction direction);
 
     QAction* searchAction_;

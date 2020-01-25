@@ -23,6 +23,7 @@ set(enki_SRCS
     src/menu_bar.cpp
     src/search-replace/search_controller.cpp
     src/search-replace/search_widget.cpp
+    src/search-replace/search_pattern.cpp
     )
 
 SET(enki_FORMS src/search-replace/SearchWidget.ui)

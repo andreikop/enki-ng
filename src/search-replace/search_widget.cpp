@@ -181,26 +181,22 @@ void SearchWidget::updateComboBoxes() {
     addCurrentValToHistory(cbMask);
 }
 
-QRegularExpression SearchWidget::getRegExp() const {
-    QString pattern = cbSearch->currentText();
+SearchPattern SearchWidget::getSearchPattern() const {
+    SearchPattern pattern(cbSearch->currentText());
 
-    // replace unicode paragraph separator with habitual \n
-    pattern = pattern.replace("\u2029", "\n");
-
-    if ( cbRegularExpression->checkState() != Qt::Checked) {
-        pattern = QRegularExpression::escape(pattern);
+    if (cbRegularExpression->checkState() == Qt::Checked) {
+        pattern.flags |= SearchPattern::REG_EXP;
     }
 
     if (cbWholeWord->checkState() == Qt::Checked) {
-        pattern = QString("\b" + pattern + "\b");
+        pattern.flags |= SearchPattern::WHOLE_WORD;
     }
 
-    QRegularExpression::PatternOption flags = QRegularExpression::NoPatternOption;
-    if (cbCaseSensitive->checkState() != Qt::Checked) {
-        flags = QRegularExpression::CaseInsensitiveOption;
+    if (cbCaseSensitive->checkState() == Qt::Checked) {
+        pattern.flags |= SearchPattern::CASE_SENSITIVE;
     }
 
-    return QRegularExpression(pattern, flags);
+    return pattern;
 }
 
 void SearchWidget::setState(State state) {
@@ -260,15 +256,7 @@ void SearchWidget::onReturnPressed() {
 }
 
 void SearchWidget::onSearchRegExpChanged() {
-    QRegularExpression regExp = getRegExp();
-
-    if (regExp.isValid()) {
-        pbSearch->setEnabled( ! regExp.pattern().isEmpty());
-    } else {
-        pbSearch->setEnabled(false);
-    }
-
-    emit(searchRegExpChanged(regExp));
+    emit(searchPatternChanged(getSearchPattern()));
 }
 
 // Update 'Search' 'Replace' 'Path' labels geometry

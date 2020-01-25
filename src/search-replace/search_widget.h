@@ -2,6 +2,8 @@
 
 #include <QFrame>
 
+#include "search_pattern.h"
+
 #include "ui_SearchWidget.h"
 
 class SearchWidget: public QFrame, private Ui::SearchWidget {
@@ -9,7 +11,7 @@ class SearchWidget: public QFrame, private Ui::SearchWidget {
 
 signals:
     void searchNext();
-    void searchRegExpChanged(const QRegularExpression&);
+    void searchPatternChanged(const SearchPattern&);
 
 public:
     enum State {
@@ -24,7 +26,8 @@ public:
     void setMode(int mode);
     void updateComboBoxes();
 
-    QRegularExpression getRegExp() const;
+    bool isPatternValid() const;
+    SearchPattern getSearchPattern() const;
 
     void setState(State state);
 
