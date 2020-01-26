@@ -21,9 +21,11 @@ set(enki_SRCS
     src/main_window.cpp
     src/workspace.cpp
     src/menu_bar.cpp
-    src/search-replace/search_controller.cpp
-    src/search-replace/search_widget.cpp
-    src/search-replace/search_pattern.cpp
+    src/search_replace/search_controller.cpp
+    src/search_replace/search_widget.cpp
+    src/search_replace/search_pattern.cpp
+    src/file_browser/file_browser.cpp
+    src/file_browser/file_tree.cpp
     )
 
 SET(enki_FORMS src/search-replace/SearchWidget.ui)

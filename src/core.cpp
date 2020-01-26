@@ -1,4 +1,5 @@
-#include "search-replace/search_controller.h"
+#include "search_replace/search_controller.h"
+#include "file_browser/file_browser.h"
 
 #include "core.h"
 
@@ -11,6 +12,7 @@ Core::Core():
 {
     instance_ = this;
     modules_.append(new SearchController());
+    modules_.append(new FileBrowserDock(mainWindow_));
 }
 
 Core::~Core() {
