@@ -1,5 +1,6 @@
 #include "workspace.h"
 #include "menu_bar.h"
+#include "module.h"
 #include "main_window.h"
 
 
@@ -20,7 +21,7 @@ private:
 
     static Core* instance_;
 
-    QVector<QObject*> modules_;
+    QVector<Module*> modules_;
 };
 
 // Conveniensce function wich returns core instance

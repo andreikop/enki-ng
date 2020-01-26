@@ -7,9 +7,11 @@
 
 #include "qutepart/qutepart.h"
 
+#include "module.h"
+
 #include "search_widget.h"
 
-class SearchController: public QObject {
+class SearchController: public Module {
     Q_OBJECT
 
 public:

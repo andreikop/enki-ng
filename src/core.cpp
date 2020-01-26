@@ -12,11 +12,11 @@ Core::Core():
 {
     instance_ = this;
     modules_.append(new SearchController());
-    modules_.append(new FileBrowserDock(mainWindow_));
+    modules_.append(new FileBrowser());
 }
 
 Core::~Core() {
-    foreach(QObject* module, modules_) {
+    foreach(Module* module, modules_) {
         delete module;
     }
 
