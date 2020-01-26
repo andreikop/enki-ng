@@ -10,6 +10,7 @@ class FileBrowserFilteredModel;
 
 
 class FileTree: public QTreeView {
+	Q_OBJECT
 public:
 	FileTree(QDockWidget* parent);
 
@@ -18,4 +19,7 @@ public:
 private:
     FileSystemModel* fsModel_;
 	FileBrowserFilteredModel* filteredModel_;
+
+private slots:
+	void onActivated(const QModelIndex& index) const;
 };

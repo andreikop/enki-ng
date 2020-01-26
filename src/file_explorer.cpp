@@ -149,7 +149,7 @@ private:
 
 
 FileExplorer::FileExplorer(QMainWindow *mainWindow, Workspace *workspace):
-    QDockWidget("Opened files", mainWindow)
+    QDockWidget("Open Files", mainWindow)
 {
     setAllowedAreas(Qt::LeftDockWidgetArea);
     setFeatures(QDockWidget::DockWidgetClosable);

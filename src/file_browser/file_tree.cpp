@@ -3,6 +3,8 @@
 #include <QSortFilterProxyModel>
 #include <QDebug>
 
+#include "core.h"
+
 #include "file_tree.h"
 
 //Extended QFileSystemModel.
@@ -71,9 +73,9 @@ FileTree::FileTree(QDockWidget* parent):
     setModel(filteredModel_);
     setRootPath(QDir::current());
 
-#if 0
     connect(this, &FileTree::activated, this, &FileTree::onActivated);
 
+#if 0
     self._fileActivated.connect(fileBrowser.fileActivated)
 
     # QDirModel loads item asynchronously, therefore we need timer for setting focus to the first item
@@ -96,4 +98,17 @@ void FileTree::setRootPath(const QDir& dir) {
     self._timerAttempts = 10
     self._setFocusTimer.start()
 #endif
+}
+
+// File or directory doubleClicked
+void FileTree::onActivated(const QModelIndex& index) const {
+    QModelIndex srcIndex = filteredModel_->mapToSource(index);
+    QString path = fsModel_->filePath(srcIndex);
+    QFileInfo fInfo(path);
+
+    if (fInfo.isFile()) {
+        // self._fileActivated.emit()
+        core().workspace().openFile(fInfo.filePath());
+        core().workspace().focusCurrentEditor();
+    }
 }
