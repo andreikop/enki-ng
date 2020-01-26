@@ -279,15 +279,12 @@ QVector<SearchController::Match> SearchController::findAllRegExp(
     QRegularExpression regExp = pattern.regExp();
     QVector<Match> result;
 
-    // FIXME get whole document text and search in it to find multiline patterns
-    QTextCursor cursor = QTextCursor(qpart->document());
-    while (1) {
-        cursor = qpart->document()->find(regExp, cursor);
-        if (cursor == QTextCursor()) {
-            break;
-        } else {
-            result.append(Match(cursor.anchor(), cursor.position()));
-        }
+    QRegularExpressionMatchIterator it = regExp.globalMatch(qpart->document()->toPlainText());
+
+    while (it.hasNext()) {
+        QRegularExpressionMatch match = it.next();
+        result.append(Match(match.capturedStart(), match.capturedEnd()));
+        // qDebug() << "cap" << match.capturedStart() << match.capturedLength()
     }
 
     return result;

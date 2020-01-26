@@ -21,7 +21,7 @@ QRegularExpression SearchPattern::regExp() const {
     }
 
     QRegularExpression::PatternOption qtFlags = QRegularExpression::NoPatternOption;
-    if (flags & CASE_SENSITIVE) {
+    if ( ! (flags & CASE_SENSITIVE)) {
         qtFlags = QRegularExpression::CaseInsensitiveOption;
     }
 
