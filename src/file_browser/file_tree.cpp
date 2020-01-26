@@ -5,8 +5,6 @@
 
 #include "file_tree.h"
 
-namespace {
-
 //Extended QFileSystemModel.
 //Shows full path on tool tips
 class FileSystemModel: public QFileSystemModel {
@@ -50,10 +48,11 @@ class FileBrowserFilteredModel: public QSortFilterProxyModel {
     }
 };
 
-
-}  // anonymous namespace
-
-FileTree::FileTree(QDockWidget* parent) {
+FileTree::FileTree(QDockWidget* parent):
+    QTreeView(parent),
+    fsModel_(new FileSystemModel(this)),
+    filteredModel_(new FileBrowserFilteredModel(this))
+{
     setAttribute(Qt::WA_MacShowFocusRect, false);
     setAttribute(Qt::WA_MacSmallSize);
     setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -62,19 +61,15 @@ FileTree::FileTree(QDockWidget* parent) {
     setTextElideMode(Qt::ElideMiddle);
 
     // dir model
-    FileSystemModel* model = new FileSystemModel(this);
-    model->setNameFilterDisables(false);
-    model->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::CaseSensitive | QDir::NoDotAndDotDot);
+    fsModel_->setNameFilterDisables(false);
+    fsModel_->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::CaseSensitive | QDir::NoDotAndDotDot);
     // self._dirsModel.directoryLoaded.connect(self.setFocus)  TODO don't have this signal in my Qt version
 
     // create proxy model
-    FileBrowserFilteredModel* filteredModel = new FileBrowserFilteredModel(this);
-    filteredModel->setSourceModel(model);
+    filteredModel_->setSourceModel(fsModel_);
 
-    qDebug() << QDir::current().path();
-    model->setRootPath(QDir::current().path());
-
-    setModel(filteredModel);
+    setModel(filteredModel_);
+    setRootPath(QDir::current());
 
 #if 0
     connect(this, &FileTree::activated, this, &FileTree::onActivated);
@@ -86,5 +81,19 @@ FileTree::FileTree(QDockWidget* parent) {
     self._setFocusTimer.timeout.connect(self._setFirstItemAsCurrent)
     self._setFocusTimer.setInterval(50)
     self._timerAttempts = 0
+#endif
+}
+
+void FileTree::setRootPath(const QDir& dir) {
+    QModelIndex index = fsModel_->setRootPath(dir.path());
+
+    // set current path
+    filteredModel_->invalidate();
+    QModelIndex newRoot = filteredModel_->mapFromSource(index);
+    setRootIndex(newRoot);
+
+#if 0
+    self._timerAttempts = 10
+    self._setFocusTimer.start()
 #endif
 }
