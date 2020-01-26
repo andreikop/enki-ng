@@ -134,13 +134,13 @@ void SearchController::updateFileActionsState() {
 }
 
 void SearchController::onModeSwitchTriggered(int newMode) {
-    if ( ! bool(searchWidget_)) {
-        createSearchWidget();
-    }
-
-    if (newMode & MODE_FLAG_FILES &&
+    if ((newMode & MODE_FLAG_FILE) &&
         core().workspace().editors().isEmpty()) {
             return;
+    }
+
+    if ( ! bool(searchWidget_)) {
+        createSearchWidget();
     }
 
     searchWidget_->setMode(newMode);
