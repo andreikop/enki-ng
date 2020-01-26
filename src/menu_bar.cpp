@@ -18,7 +18,13 @@ MenuBar::MenuBar(QMainWindow* parent):
 {
     fileOpenAction = addActionToMenu(fileMenu, "Open...", QKeySequence::Open);
     fileSaveAction = addActionToMenu(fileMenu, "Save", QKeySequence::Save);
-    fileCloseAction = addActionToMenu(fileMenu, "Close", QKeySequence::Close);
+
+    fileCloseAction = addActionToMenu(fileMenu, "Close", QKeySequence("Ctrl+W"));
+
+    // Workaround a bug on some systems. Alt+F4 is a bad shortcut to close document
+    if (fileCloseAction->shortcut() == QKeySequence("Alt+F4")) {
+        fileCloseAction->setShortcut(QKeySequence("Ctrl+W"));
+    }
 
     fileMenu->addSeparator();
 
