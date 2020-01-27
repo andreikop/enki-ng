@@ -21,8 +21,8 @@ class OpenedFileModel: public QAbstractItemModel {
      */
 public:
     OpenedFileModel(QObject *parent, Workspace *workspace):
-        m_editors(workspace->editors()),
-        m_notModifiedIcon(transparentIcon())
+        editors_(workspace->editors()),
+        transparentIcon_(transparentIcon())
     {
         connect(workspace, &Workspace::editorOpened,
             this, &OpenedFileModel::onEditorOpened);
@@ -41,28 +41,29 @@ public:
         if (parent.isValid())
             return 0;
         else
-            return m_editors.size();
+            return editors_.size();
     }
 
     bool hasChildren(const QModelIndex& parent) const {
         if (parent.isValid())
             return false;
         else
-            return ! m_editors.isEmpty();
+            return ! editors_.isEmpty();
     }
 
     QVariant data(const QModelIndex& index, int role) const {
         if ( ! index.isValid())
             return QVariant();
 
-        Editor* editor = m_editors[index.row()];
+        Editor* editor = editors_[index.row()];
 
         switch (role) {
             case Qt::DecorationRole:
                 if (editor->qutepart().document()->isModified()) {
-                    return QIcon::fromTheme("document-save");
+                    // Using transparent icon as fallback because the list looks badly if icon theme is not set
+                    return QIcon::fromTheme("document-save", transparentIcon_);
                 } else {
-                    return m_notModifiedIcon;
+                    return transparentIcon_;
                 }
             case Qt::DisplayRole:
                 return QFileInfo(editor->filePath()).fileName();
@@ -79,7 +80,7 @@ public:
             column > 0 ||
             column < 0 ||
             row < 0 ||
-            row >= m_editors.size())
+            row >= editors_.size())
                 return QModelIndex();
 
         return createIndex(row, column);
@@ -90,31 +91,31 @@ public:
     }
 
     QModelIndex editorIndex(Editor* editor) const {
-        return index(m_editors.indexOf(editor), 0);
+        return index(editors_.indexOf(editor), 0);
     }
 
 private slots:
     void onEditorOpened(Editor* editor) {
-        int index = m_editors.indexOf(editor);
+        int index = editors_.indexOf(editor);
         beginInsertRows(QModelIndex(), index, index);
         endInsertRows();
     }
 
     void onEditorClosed(Editor* editor) {
-        int index = m_editors.indexOf(editor);
+        int index = editors_.indexOf(editor);
         beginRemoveRows(QModelIndex(), index, index);
         endRemoveRows();
     }
 
     void onEditorModifiedChanged(Editor* editor, bool modified) {
-        int editorIndex = m_editors.indexOf(editor);
+        int editorIndex = editors_.indexOf(editor);
         QModelIndex modelIndex = index(editorIndex, 0);
         emit dataChanged(modelIndex, modelIndex);
     }
 
 private:
-    const QList<Editor*>& m_editors;
-    QIcon m_notModifiedIcon;
+    const QList<Editor*>& editors_;
+    QIcon transparentIcon_;
 };
 
 class FileExplorerTreeView: public QTreeView {
