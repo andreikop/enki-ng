@@ -7,9 +7,9 @@
 
 class Core {
 public:
-    MainWindow& mainWindow() const;
-    Workspace& workspace() const;
-    Project& project() const;
+    MainWindow& mainWindow();
+    Workspace& workspace();
+    Project& project();
 
     friend Core& core();
     friend int main(int argc, char** argv);
@@ -18,9 +18,9 @@ private:
     Core();
     ~Core();
 
-    MainWindow* mainWindow_;
-    Workspace* workspace_;
-    Project* project_;
+    MainWindow mainWindow_;
+    Workspace workspace_;
+    Project project_;
 
     static Core* instance_;
 

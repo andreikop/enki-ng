@@ -7,9 +7,7 @@
 Core* Core::instance_ = nullptr;
 
 Core::Core():
-    mainWindow_(new MainWindow()),
-    workspace_(new Workspace(mainWindow_)),
-    project_(new Project())
+    workspace_(&mainWindow_)
 {
     instance_ = this;
     modules_.append(new SearchController());
@@ -20,22 +18,18 @@ Core::~Core() {
     foreach(Module* module, modules_) {
         delete module;
     }
-
-    delete project_;
-    delete workspace_;
-    delete mainWindow_;
 }
 
-MainWindow& Core::mainWindow() const {
-    return *mainWindow_;
+MainWindow& Core::mainWindow() {
+    return mainWindow_;
 }
 
-Workspace& Core::workspace() const {
-    return *workspace_;
+Workspace& Core::workspace() {
+    return workspace_;
 }
 
-Project& Core::project() const {
-    return *project_;
+Project& Core::project() {
+    return project_;
 }
 
 Core& core() {
