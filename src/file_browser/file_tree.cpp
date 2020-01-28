@@ -51,9 +51,7 @@ class FileBrowserFilteredModel: public QSortFilterProxyModel {
 };
 
 FileTree::FileTree(QDockWidget* parent):
-    QTreeView(parent),
-    fsModel_(new FileSystemModel(this)),
-    filteredModel_(new FileBrowserFilteredModel(this))
+    QTreeView(parent)
 {
     setAttribute(Qt::WA_MacShowFocusRect, false);
     setAttribute(Qt::WA_MacSmallSize);
@@ -62,16 +60,8 @@ FileTree::FileTree(QDockWidget* parent):
     setUniformRowHeights(true);
     setTextElideMode(Qt::ElideMiddle);
 
-    // dir model
-    fsModel_->setNameFilterDisables(false);
-    fsModel_->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::CaseSensitive | QDir::NoDotAndDotDot);
-    // self._dirsModel.directoryLoaded.connect(self.setFocus)  TODO don't have this signal in my Qt version
-
-    // create proxy model
-    filteredModel_->setSourceModel(fsModel_);
-
-    setModel(filteredModel_);
-    setRootPath(QDir::current());
+    setModel(&core().project().filteredFsModel());
+    setRootIndex(core().project().filteredFsModelRootIndex());
 
     connect(this, &FileTree::activated, this, &FileTree::onActivated);
 
@@ -86,12 +76,10 @@ FileTree::FileTree(QDockWidget* parent):
 #endif
 }
 
+#if 0
 void FileTree::setRootPath(const QDir& dir) {
-    QModelIndex index = fsModel_->setRootPath(dir.path());
-
-    // set current path
-    filteredModel_->invalidate();
-    QModelIndex newRoot = filteredModel_->mapFromSource(index);
+    core().project().setRootPath(dir);
+    QModelIndex newRoot = core().project().filteredFsModelRootIndex();
     setRootIndex(newRoot);
 
 #if 0
@@ -99,12 +87,11 @@ void FileTree::setRootPath(const QDir& dir) {
     self._setFocusTimer.start()
 #endif
 }
+#endif
 
 // File or directory doubleClicked
 void FileTree::onActivated(const QModelIndex& index) const {
-    QModelIndex srcIndex = filteredModel_->mapToSource(index);
-    QString path = fsModel_->filePath(srcIndex);
-    QFileInfo fInfo(path);
+    QFileInfo fInfo = core().project().filteredFsModel().fileInfo(index);
 
     if (fInfo.isFile()) {
         // self._fileActivated.emit()

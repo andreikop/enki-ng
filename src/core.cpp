@@ -8,7 +8,8 @@ Core* Core::instance_ = nullptr;
 
 Core::Core():
     mainWindow_(new MainWindow()),
-    workspace_(new Workspace(mainWindow_))
+    workspace_(new Workspace(mainWindow_)),
+    project_(new Project())
 {
     instance_ = this;
     modules_.append(new SearchController());
@@ -20,6 +21,7 @@ Core::~Core() {
         delete module;
     }
 
+    delete project_;
     delete workspace_;
     delete mainWindow_;
 }
@@ -30,6 +32,10 @@ MainWindow& Core::mainWindow() const {
 
 Workspace& Core::workspace() const {
     return *workspace_;
+}
+
+Project& Core::project() const {
+    return *project_;
 }
 
 Core& core() {
