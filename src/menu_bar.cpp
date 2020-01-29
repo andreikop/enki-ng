@@ -28,7 +28,7 @@ MenuBar::MenuBar(QMainWindow* parent):
 
     fileMenu->addSeparator();
 
-    m_fileQuitAction = fileMenu->addAction(
+    fileQuitAction_ = fileMenu->addAction(
         "Quit",
         QApplication::instance(), SLOT(quit()),
         QKeySequence::Quit);
@@ -38,8 +38,14 @@ MenuBar::MenuBar(QMainWindow* parent):
 
     QMenu* navigationMenu = addMenu("Navigation");
     searchMenu_ = navigationMenu->addMenu("Search and Replace");
+
+    goToMenu_ = addMenu("Go To");
 }
 
 QMenu* MenuBar::searchMenu() const {
     return searchMenu_;
+}
+
+QMenu* MenuBar::goToMenu() const {
+    return goToMenu_;
 }

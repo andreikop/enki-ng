@@ -22,6 +22,7 @@ set(enki_SRCS
     src/workspace.cpp
     src/menu_bar.cpp
     src/project.cpp
+    src/locator/locator.cpp
     src/search_replace/search_controller.cpp
     src/search_replace/search_widget.cpp
     src/search_replace/search_pattern.cpp
