@@ -21,5 +21,7 @@ public:
 
 private:
     QAction showAction_;
-    LocatorDialog widget_;
+
+private slots:
+    void onTriggered();
 };

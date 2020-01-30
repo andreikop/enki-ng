@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QDir>
 #include <QFileSystemModel>
@@ -35,7 +37,7 @@ public:
     File system is scanned asyncronously,
     the list might be bigger if you call this method later.
      */
-    QStringList fileList() const;
+    QStringList fileList();
 
     /* Filtered FS model which contains files not excluded by file name filters
 
@@ -49,11 +51,20 @@ public:
     QModelIndex filteredFsModelRootIndex() const;
 
 signals:
-    void pathChanged(const QDir& path);
+    void pathChanged(const QDir& path) const;
+    void fileListUpdated() const;
 
 private:
     QDir path_;
     QFileSystemModel fsModel_;
     FilteredFsModel filteredFsModel_;
-    QStringList fileListCache_;
+
+    std::unique_ptr<QStringList> fileListCache_;
+
+    void findFilesRecursively(const QModelIndex& filteredModelIndex, QStringList& result);
+
+    void startChildNodeLoading(const QString& directory);
+
+private slots:
+    void onDirectoryLoaded(const QString& directory);
 };

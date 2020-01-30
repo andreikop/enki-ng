@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "project.h"
 
 
@@ -31,13 +33,15 @@ Project::Project():
     // create proxy model
     filteredFsModel_.setSourceModel(&fsModel_);
 
+    connect(&fsModel_, &QFileSystemModel::directoryLoaded, this, &Project::onDirectoryLoaded);
+
     setPath(QDir::current());
 }
 
 void Project::setPath(const QDir& path) {
     path_ = path;
     fsModel_.setRootPath(path.path());
-    fileListCache_ = QStringList();
+    fileListCache_.reset();
     emit(pathChanged(path));
 }
 
@@ -45,9 +49,13 @@ QDir Project::path() const {
     return path_;
 }
 
-QStringList Project::fileList() const {
-    // FIXME implement
-    return QStringList();
+QStringList Project::fileList() {
+    if (! fileListCache_) {
+        fileListCache_ = std::make_unique<QStringList>();
+        findFilesRecursively(filteredFsModelRootIndex(), *fileListCache_);
+    }
+
+    return *fileListCache_;
 }
 
 FilteredFsModel& Project::filteredFsModel() {
@@ -58,4 +66,33 @@ QModelIndex Project::filteredFsModelRootIndex() const {
     QModelIndex fsModelIndex = fsModel_.index(fsModel_.rootPath());
 
     return filteredFsModel_.mapFromSource(fsModelIndex);
+}
+
+void Project::findFilesRecursively(const QModelIndex& filteredModelIndex, QStringList& result) {
+    QFileInfo fInfo = filteredFsModel_.fileInfo(filteredModelIndex);
+    if (fInfo.isFile()) {
+        result << path_.relativeFilePath(fInfo.filePath());
+    } else if (fInfo.isDir()) {
+        for(int childIdx = 0; childIdx < filteredFsModel_.rowCount(filteredModelIndex); childIdx++) {
+            findFilesRecursively(filteredFsModel_.index(childIdx, 0, filteredModelIndex), result);
+        }
+    }
+}
+
+void Project::startChildNodeLoading(const QString& directory) {
+    QModelIndex filteredModelIndex = filteredFsModel_.mapFromSource(fsModel_.index(directory));
+
+    int childCount = filteredFsModel_.rowCount(filteredModelIndex);
+    for(int childIdx = 0; childIdx < childCount; childIdx++) {
+        filteredFsModel_.fetchMore(filteredFsModel_.index(childIdx, 0, filteredModelIndex));
+    }
+}
+
+void Project::onDirectoryLoaded(const QString& directory) {
+    fileListCache_.reset();
+
+    startChildNodeLoading(directory);
+
+    // TODO delay signal until finished loading children?
+    emit(fileListUpdated());
 }

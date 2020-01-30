@@ -10,14 +10,7 @@ namespace {
 class OpenFileCommand {
 public:
     QStringList fileList() const {
-#if 0
         return core().project().fileList();
-#else
-        QStringList result;
-        result << "foo";
-        result << "bar";
-#endif
-        return result;
     }
 };
 
@@ -26,6 +19,14 @@ public:
     LocatorModel(const OpenFileCommand& command):
         command_(command)
     {}
+
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override {
+        if (parent.isValid()) {
+            return 0;
+        } else {
+            return command_.fileList().size();
+        }
+    }
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const override {
         return 1;
@@ -45,10 +46,6 @@ public:
 
     QModelIndex parent(const QModelIndex &index) const override {
         return QModelIndex();
-    }
-
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override {
-        return command_.fileList().size();
     }
 
 private:
@@ -75,11 +72,16 @@ LocatorDialog::LocatorDialog(QMainWindow* parent):
 }
 
 Locator::Locator():
-    showAction_(QIcon::fromTheme("go-jump"), "Locator", this),
-    widget_(&core().mainWindow())
+    showAction_(QIcon::fromTheme("go-jump"), "Locator", this)
 {
-    connect(&showAction_, &QAction::triggered, &widget_, &LocatorDialog::open);
+    connect(&showAction_, &QAction::triggered, this, &Locator::onTriggered);
     showAction_.setShortcut(QKeySequence("Ctrl+L"));
 
     core().mainWindow().menuBar()->goToMenu()->addAction(&showAction_);
+}
+
+void Locator::onTriggered() {
+    LocatorDialog* locatorDialog = new LocatorDialog(&core().mainWindow());
+    locatorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+    locatorDialog->open();
 }
