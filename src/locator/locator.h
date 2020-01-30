@@ -10,9 +10,14 @@
 
 #include "ui_LocatorDialog.h"
 
+class OpenFileCommand;
+
 class LocatorDialog: public QDialog, private Ui_LocatorDialog {
 public:
     LocatorDialog(QMainWindow* parent);
+
+private:
+    std::unique_ptr<OpenFileCommand> command_;
 };
 
 class Locator: public Module {

@@ -5,8 +5,6 @@
 #include "core.h"
 
 
-namespace {
-
 class OpenFileCommand {
 public:
     QStringList fileList() const {
@@ -14,9 +12,12 @@ public:
     }
 };
 
+namespace {
+
 class LocatorModel: public QAbstractItemModel {
 public:
-    LocatorModel(const OpenFileCommand& command):
+    LocatorModel(QObject* parent, const OpenFileCommand& command):
+        QAbstractItemModel(parent),
         command_(command)
     {}
 
@@ -67,8 +68,8 @@ LocatorDialog::LocatorDialog(QMainWindow* parent):
     int width = QFontMetrics(biggerFont).width(QString().fill('x', 64));  // width of 64 'x' letters
     resize(width, width * 0.62);
 
-    // FIXME 2 memory leaks!!!
-    listView->setModel(new LocatorModel(*(new OpenFileCommand)));
+    command_ = std::make_unique<OpenFileCommand>();
+    listView->setModel(new LocatorModel(this, *command_));
 }
 
 Locator::Locator():
@@ -81,7 +82,6 @@ Locator::Locator():
 }
 
 void Locator::onTriggered() {
-    LocatorDialog* locatorDialog = new LocatorDialog(&core().mainWindow());
-    locatorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-    locatorDialog->open();
+    LocatorDialog locatorDialog(&core().mainWindow());
+    locatorDialog.exec();
 }
