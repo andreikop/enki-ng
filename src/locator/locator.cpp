@@ -1,59 +1,12 @@
 #include <QDebug>
+#include <QVariant>
 
 #include "locator.h"
 
 #include "core.h"
 
+#include "open_file_command.h"
 
-class OpenFileCommand {
-public:
-    QStringList fileList() const {
-        return core().project().fileList();
-    }
-};
-
-namespace {
-
-class LocatorModel: public QAbstractItemModel {
-public:
-    LocatorModel(QObject* parent, const OpenFileCommand& command):
-        QAbstractItemModel(parent),
-        command_(command)
-    {}
-
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override {
-        if (parent.isValid()) {
-            return 0;
-        } else {
-            return command_.fileList().size();
-        }
-    }
-
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override {
-        return 1;
-    }
-
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
-        if (role == Qt::DisplayRole) {
-            return command_.fileList()[index.row()];
-        } else {
-            return QVariant();  // TODO return file icon
-        }
-    }
-
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override {
-        return createIndex(row, column);
-    }
-
-    QModelIndex parent(const QModelIndex &index) const override {
-        return QModelIndex();
-    }
-
-private:
-    const OpenFileCommand& command_;
-};
-
-};  // anonymous namespace
 
 LocatorDialog::LocatorDialog(QMainWindow* parent):
         QDialog(parent)
@@ -69,7 +22,9 @@ LocatorDialog::LocatorDialog(QMainWindow* parent):
     resize(width, width * 0.62);
 
     command_ = std::make_unique<OpenFileCommand>();
-    listView->setModel(new LocatorModel(this, *command_));
+    listView->setModel(&command_->model());
+
+    connect(lineEdit, &QLineEdit::textChanged, command_.get(), &OpenFileCommand::setCommandText);
 }
 
 Locator::Locator():

@@ -23,6 +23,8 @@ set(enki_SRCS
     src/menu_bar.cpp
     src/project.cpp
     src/locator/locator.cpp
+    src/locator/locator_model.cpp
+    src/locator/open_file_command.cpp
     src/search_replace/search_controller.cpp
     src/search_replace/search_widget.cpp
     src/search_replace/search_pattern.cpp

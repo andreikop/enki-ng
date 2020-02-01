@@ -8,9 +8,11 @@
 
 #include "module.h"
 
+#include "locator_model.h"
+
 #include "ui_LocatorDialog.h"
 
-class OpenFileCommand;
+
 
 class LocatorDialog: public QDialog, private Ui_LocatorDialog {
 public:
