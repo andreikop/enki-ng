@@ -46,12 +46,24 @@ QModelIndex LocatorModel::parent(const QModelIndex &index) const {
 namespace {
 
 double getFileScore(const QString& filePath, const QString& filterText) {
-    foreach(QChar ch, filterText) {
-        if ( ! filePath.contains(ch)) {
-            return 0.;
+    int textCursor = filePath.length();
+
+    double score = 0.;
+
+    for (auto it = filterText.rbegin(); it != filterText.rend(); ++it) {
+        QChar ch = *it;
+        QStringRef textRef = filePath.leftRef(textCursor);
+        int charIndex = textRef.lastIndexOf(ch);
+
+        if (charIndex == -1) {
+            return -1;
+        } else {
+            score += (filePath.length() - charIndex);
+            textCursor = charIndex;
         }
     }
-    return 1.;
+
+    return score;
 }
 
 }; // anonymous namespace
@@ -70,7 +82,7 @@ void LocatorModel::setCommandText(const QString& text) {
     std::sort(
         items_.begin(), items_.end(),
         [](const Item& a, const Item& b) -> bool {
-            return a.score > b.score;
+            return a.score < b.score;
         });
 
     endResetModel();
