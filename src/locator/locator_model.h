@@ -22,6 +22,7 @@ public:
 private:
     const OpenFileCommand& command_;
 
+    QString commandText_;
     struct Item {
         double score;
         QString filePath;
