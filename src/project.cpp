@@ -9,11 +9,11 @@ QFileInfo FilteredFsModel::fileInfo(const QModelIndex& index) const {
     return QFileInfo(path);
 }
 
-int FilteredFsModel::columnCount(const QModelIndex& parent) const {
+int FilteredFsModel::columnCount(const QModelIndex& /*parent*/) const {
     return 1;
 }
 
-bool FilteredFsModel::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const {
+bool FilteredFsModel::filterAcceptsRow(int /*sourceRow*/, const QModelIndex& /*sourceParent*/) const {
 #if 0
         if sourceParent == QModelIndex():
             return True

@@ -86,7 +86,7 @@ public:
     }
 };
 
-};  // anonymous namespace
+}  // anonymous namespace
 
 
 LocatorDialog::LocatorDialog(QMainWindow* parent):

@@ -12,7 +12,7 @@ FileBrowserDock::FileBrowserDock(QMainWindow* mainWindow):
     mainWindow->addDockWidget(Qt::LeftDockWidgetArea, this);
 
     setWidget(new FileTree(this));
-};
+}
 
 FileBrowser::FileBrowser():
     dock_(std::make_unique<FileBrowserDock>(&core().mainWindow()))

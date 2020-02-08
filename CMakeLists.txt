@@ -42,5 +42,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_executable(enki-ng ${enki_SRCS} ${enki_FORMS_HEADERS})
 
 target_link_libraries(enki-ng Qt5::Core Qt5::Widgets qutepart)
+target_compile_options(enki-ng PRIVATE -Wall -Wextra -pedantic -Werror)
 
 install(TARGETS enki-ng DESTINATION bin)

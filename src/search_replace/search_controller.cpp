@@ -26,7 +26,7 @@ SearchController::~SearchController() {
 
 QAction* SearchController::createAction(
         const QString& text,
-        const QString& icon,
+        const QString& /*icon*/,
         const QString& shortcut,
         const QString& toolTip,
         bool enabled) {
@@ -223,7 +223,7 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
 }
 
 // Choose start point from which search started
-int SearchController::updateSearchStartPoint(
+void SearchController::updateSearchStartPoint(
         Qutepart::Qutepart* qutepart,
         Direction direction,
         IncrementalMode incrementalMode) {

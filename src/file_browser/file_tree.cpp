@@ -28,7 +28,7 @@ class FileBrowserFilteredModel: public QSortFilterProxyModel {
 	using QSortFilterProxyModel::QSortFilterProxyModel;
 
     //Column count for the model
-    int columnCount(const QModelIndex& parent=QModelIndex()) const override {
+    int columnCount(const QModelIndex& = QModelIndex()) const override {
         return 1;
     }
 
@@ -39,7 +39,7 @@ class FileBrowserFilteredModel: public QSortFilterProxyModel {
 
     // Main method. Check if file matches filter
     // TODO implement
-    bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override {
+    bool filterAcceptsRow(int /*sourceRow*/, const QModelIndex& /*sourceParent*/) const override {
 #if 0
         if sourceParent == QModelIndex():
             return True

@@ -40,8 +40,6 @@ double getFileScore(const QString& filePath, const QString& filterText) {
 NOTE This method contains some common code with getFileScore
 */
 QString formatFilePath(const QString& filePath, QString filterText) {
-    int textCursor = filePath.length();
-
     QStringList resultParts;
 
     auto filterIt = filterText.rbegin();
@@ -64,7 +62,7 @@ QString formatFilePath(const QString& filePath, QString filterText) {
     return result;
 }
 
-}; // anonymous namespace
+} // anonymous namespace
 
 
 LocatorModel::LocatorModel(const OpenFileCommand& command):
@@ -83,7 +81,7 @@ int LocatorModel::rowCount(const QModelIndex &parent) const {
     }
 }
 
-int LocatorModel::columnCount(const QModelIndex &parent) const {
+int LocatorModel::columnCount(const QModelIndex& /*parent*/) const {
     return 1;
 }
 
@@ -95,11 +93,11 @@ QVariant LocatorModel::data(const QModelIndex &index, int role) const {
     }
 }
 
-QModelIndex LocatorModel::index(int row, int column, const QModelIndex &parent) const {
+QModelIndex LocatorModel::index(int row, int column, const QModelIndex& /*parent*/) const {
     return createIndex(row, column);
 }
 
-QModelIndex LocatorModel::parent(const QModelIndex &index) const {
+QModelIndex LocatorModel::parent(const QModelIndex& /*index*/) const {
     return QModelIndex();
 }
 

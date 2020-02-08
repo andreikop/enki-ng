@@ -79,7 +79,7 @@ private:
     QVector<Match> findAllRegExp(Qutepart::Qutepart* qpart, const SearchPattern& pattern) const;
     int chooseMatch(const QVector<Match>& matches, int cursorPos, SearchController::Direction direction) const;
 
-    int updateSearchStartPoint(
+    void updateSearchStartPoint(
         Qutepart::Qutepart* qutepart,
         Direction direction,
         IncrementalMode incrementalMode);

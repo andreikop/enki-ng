@@ -37,7 +37,7 @@ QString regExEscape(QString text) {
     return text;
 }
 
-}; // anonymous namespace
+} // anonymous namespace
 
 SearchWidget::SearchWidget():
     QFrame(&core().mainWindow()) {
@@ -172,7 +172,7 @@ void addCurrentValToHistory(QComboBox* combo) {
         }
     }
 }
-};
+}  // anonymous namespace
 
 // Update comboboxes with last used texts
 void SearchWidget::updateComboBoxes() {

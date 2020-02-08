@@ -21,6 +21,7 @@ class OpenedFileModel: public QAbstractItemModel {
      */
 public:
     OpenedFileModel(QObject *parent, Workspace *workspace):
+        QAbstractItemModel(parent),
         editors_(workspace->editors()),
         transparentIcon_(transparentIcon())
     {
@@ -33,7 +34,7 @@ public:
 
     }
 
-    int columnCount(const QModelIndex& parent) const {
+    int columnCount(const QModelIndex& /*parent*/) const {
         return 1;
     }
 
@@ -86,7 +87,7 @@ public:
         return createIndex(row, column);
     }
 
-    QModelIndex parent(const QModelIndex& index) const {
+    QModelIndex parent(const QModelIndex& /*index*/) const {
         return QModelIndex();
     }
 
@@ -107,7 +108,7 @@ private slots:
         endRemoveRows();
     }
 
-    void onEditorModifiedChanged(Editor* editor, bool modified) {
+    void onEditorModifiedChanged(Editor* editor, bool /*modified*/) {
         int editorIndex = editors_.indexOf(editor);
         QModelIndex modelIndex = index(editorIndex, 0);
         emit dataChanged(modelIndex, modelIndex);
@@ -120,7 +121,9 @@ private:
 
 class FileExplorerTreeView: public QTreeView {
 public:
-    FileExplorerTreeView(QObject* parent, Workspace* workspace) {
+    FileExplorerTreeView(QWidget* parent, Workspace* workspace):
+        QTreeView(parent)
+    {
         setHeaderHidden(true);
         setRootIsDecorated(false);
         setTextElideMode(Qt::ElideMiddle);
