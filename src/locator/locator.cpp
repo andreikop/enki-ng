@@ -107,6 +107,9 @@ LocatorDialog::LocatorDialog(QMainWindow* parent):
     listView->setItemDelegate(new HTMLDelegate(listView));
 
     connect(lineEdit, &QLineEdit::textChanged, command_.get(), &OpenFileCommand::setCommandText);
+
+    connect(listView, &QListView::activated, command_.get(), &OpenFileCommand::onItemActivated);
+    connect(command_.get(), &OpenFileCommand::done, this, [this] {this->done(0);});
 }
 
 Locator::Locator():

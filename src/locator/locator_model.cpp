@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <QDebug>
 
 #include "core.h"
@@ -120,4 +122,10 @@ void LocatorModel::setCommandText(const QString& text) {
         });
 
     endResetModel();
+}
+
+const QString& LocatorModel::filePath(const QModelIndex& index) const {
+    assert(index.column() == 0);
+    assert( ! index.parent().isValid());
+    return items_[index.row()].filePath;
 }

@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "core.h"
 
 #include "open_file_command.h"
@@ -13,4 +15,10 @@ QAbstractItemModel& OpenFileCommand::model() {
 
 void OpenFileCommand::setCommandText(const QString& text) {
     model_.setCommandText(text);
+}
+
+void OpenFileCommand::onItemActivated(const QModelIndex& index) {
+    const QString& path = model_.filePath(index);
+    core().workspace().openFile(path);
+    emit(done());
 }

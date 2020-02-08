@@ -14,6 +14,11 @@ public:
 
 public slots:
     void setCommandText(const QString& text);
+    void onItemActivated(const QModelIndex& index);
+
+signals:
+    void done();
+
 private:
     LocatorModel model_;
 };

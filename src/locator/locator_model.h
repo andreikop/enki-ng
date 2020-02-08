@@ -18,6 +18,7 @@ public:
     QModelIndex parent(const QModelIndex &index) const override;
 
     void setCommandText(const QString& text);
+    const QString& filePath(const QModelIndex& index) const;
 
 private:
     const OpenFileCommand& command_;

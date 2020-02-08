@@ -13,7 +13,6 @@
 #include "ui_LocatorDialog.h"
 
 
-
 class LocatorDialog: public QDialog, private Ui_LocatorDialog {
 public:
     LocatorDialog(QMainWindow* parent);
@@ -21,6 +20,7 @@ public:
 private:
     std::unique_ptr<OpenFileCommand> command_;
 };
+
 
 class Locator: public Module {
 public:
