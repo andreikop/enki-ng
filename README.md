@@ -15,16 +15,16 @@ On Ubuntu and Ubuntu-based systems
     sudo apt-get install g++ cmake qt5base-dev qtbase5-dev-tools
 ```
 
-## Building with Qutepart installed to the system
+## Building
 
-### Prepare build directory
+#### Prepare build directory
 
 ```
     mkdir build
     cd build
 ```
 
-### Configure
+#### Configure
 
 To use Qutepart installed to the system:
 
@@ -33,8 +33,7 @@ To use Qutepart installed to the system:
 ```
 
 It is also possible to build Enki with Qutepart checked out as source tree.
-
-This variant usually is used for development
+This variant usually is used for development:
 
 ```
     cmake .. -DCMAKE_SRC_DIR=../../qutepart-cpp/
@@ -42,19 +41,19 @@ This variant usually is used for development
 
 Replace `../../qutepart-cpp` with your Qutepart source directory path relative to current directory.
 
-### Build
+#### Build
 
 ```
     make
 ```
 
-### To run from the sources
+#### To run from the sources
 ```
     ./enki-ng
 ```
 (From the build directory, after enki-ng was built)
 
-### To install to the system
+#### To install to the system
 ```
     sudo make install
 ```
