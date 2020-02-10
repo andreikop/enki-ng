@@ -2,9 +2,23 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(enki)
 
+set(CMAKE_SRC_DIR ""
+    CACHE PATH
+    "Qutepart source tree path. If not empty - Qutepart from this path is built as a subproject")
+
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
 SET(CMAKE_AUTOUIC ON)
+
+
+if(NOT CMAKE_SRC_DIR STREQUAL "")
+    message("Using Qutepart from source directory " ${CMAKE_SRC_DIR})
+    add_subdirectory(${CMAKE_SRC_DIR} qutepart)
+    include_directories(BEFORE ${CMAKE_SRC_DIR}/include)
+else(NOT CMAKE_SRC_DIR STREQUAL "")
+    message("Using Qutepart installed to the system")
+endif(NOT CMAKE_SRC_DIR STREQUAL "")
+
 
 set(CMAKE_CXX_STANDARD 17)
 
