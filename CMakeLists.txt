@@ -2,23 +2,54 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(enki)
 
+#
+#  Integrate Qutepart
+#
 set(CMAKE_SRC_DIR ""
     CACHE PATH
     "Qutepart source tree path. If not empty - Qutepart from this path is built as a subproject")
 
-# Instruct CMake to run moc automatically when needed
-set(CMAKE_AUTOMOC ON)
-SET(CMAKE_AUTOUIC ON)
+set(QUTEPART_MIN_REQUIRED_VERSION 0.1.0)  # need at least this version
+set(QUTEPART_MAX_REQUIRED_VERSION 2.0.0)  # but not this version
+
 
 
 if(NOT CMAKE_SRC_DIR STREQUAL "")
-    message("Using Qutepart from source directory " ${CMAKE_SRC_DIR})
     add_subdirectory(${CMAKE_SRC_DIR} qutepart)
+    message(${QUTEPART_VERSION})
+    if (NOT DEFINED QUTEPART_VERSION)
+        message(FATAL_ERROR
+            "Are you sure " ${CMAKE_SRC_DIR} " directory contains Qutepart? "
+            "QUTEPART_VERSION variable is not defined.")
+    endif (NOT DEFINED QUTEPART_VERSION)
+
+    if (QUTEPART_VERSION VERSION_LESS QUTEPART_MIN_REQUIRED_VERSION)
+        message(FATAL_ERROR
+                "Too old Qutepart version " ${QUTEPART_VERSION}
+                " found in " ${CMAKE_SRC_DIR}
+                " Required version >= " ${QUTEPART_MIN_REQUIRED_VERSION})
+    endif(QUTEPART_VERSION VERSION_LESS QUTEPART_MIN_REQUIRED_VERSION)
+    if (QUTEPART_VERSION VERSION_GREATER_EQUAL QUTEPART_MAX_REQUIRED_VERSION)
+        message(FATAL_ERROR
+                "Too new Qutepart version " ${QUTEPART_VERSION}
+                " found in " ${CMAKE_SRC_DIR}
+                " Required version < " ${QUTEPART_MAX_REQUIRED_VERSION})
+    endif (QUTEPART_VERSION VERSION_GREATER_EQUAL QUTEPART_MAX_REQUIRED_VERSION)
+    message("Using Qutepart from source directory " ${CMAKE_SRC_DIR})
     include_directories(BEFORE ${CMAKE_SRC_DIR}/include)
 else(NOT CMAKE_SRC_DIR STREQUAL "")
     message("Using Qutepart installed to the system")
+    # TODO how to verify version ??
 endif(NOT CMAKE_SRC_DIR STREQUAL "")
 
+
+#
+# Build the package
+#
+
+# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
