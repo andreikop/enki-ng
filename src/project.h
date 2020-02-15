@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QFileSystemModel>
 #include <QSortFilterProxyModel>
+#include <QRegExp>
 
 /* This class provides API to work with current project.
 
@@ -21,8 +22,19 @@ public:
     // FileTree needs only one column, but probably it should implement own model
     int columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
+    void setIgnoredFilePatterns(const QList<QRegExp>& patterns);
+    void setIgnoredDirectoryPatterns(const QList<QRegExp>& patterns);
+    void setCanonicalRootPath(const QString& path);
+
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
+
+private:
+    static bool wildcardListMatches(const QList<QRegExp>& wildcards, const QFileInfo& fInfo);
+
+    QList<QRegExp> ignoredFileWildcards_;
+    QList<QRegExp> ignoredDirectoryWildcards_;
+    QString canonicalRootPath_;
 };
 
 

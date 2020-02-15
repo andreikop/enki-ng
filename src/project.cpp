@@ -13,14 +13,44 @@ int FilteredFsModel::columnCount(const QModelIndex& /*parent*/) const {
     return 1;
 }
 
-bool FilteredFsModel::filterAcceptsRow(int /*sourceRow*/, const QModelIndex& /*sourceParent*/) const {
-#if 0
-        if sourceParent == QModelIndex():
-            return True
-        return not core.fileFilter().regExp().match(sourceParent.child(sourceRow, 0).data())
-#else
-    return true;
-#endif
+void FilteredFsModel::setIgnoredFilePatterns(const QList<QRegExp>& patterns) {
+    ignoredFileWildcards_ = patterns;
+}
+
+void FilteredFsModel::setIgnoredDirectoryPatterns(const QList<QRegExp>& patterns) {
+    ignoredDirectoryWildcards_ = patterns;
+}
+
+void FilteredFsModel::setCanonicalRootPath(const QString& path) {
+    canonicalRootPath_ = path;
+}
+
+bool FilteredFsModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const {
+    QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
+    QString path = sourceModel()->data(sourceIndex, QFileSystemModel::FilePathRole).toString();
+    QFileInfo fInfo = QFileInfo(path);
+    if (fInfo.isDir()) {
+        // It is important not to ignore parent directories.
+        if (canonicalRootPath_.startsWith(fInfo.canonicalFilePath())) {
+            return true;  // always allow parents (higher than project root)
+        }
+
+        return ! wildcardListMatches(ignoredDirectoryWildcards_, fInfo);
+    } else {
+        return ! wildcardListMatches(ignoredFileWildcards_, fInfo);
+    }
+}
+
+bool FilteredFsModel::wildcardListMatches(const QList<QRegExp>& wildcards, const QFileInfo& fInfo) {
+    QString path = fInfo.fileName();
+
+    foreach(const QRegExp& rx, wildcards) {
+        if (rx.exactMatch(path)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 Project::Project():
@@ -31,7 +61,19 @@ Project::Project():
     fsModel_.setFilter(QDir::AllDirs | QDir::AllEntries | QDir::CaseSensitive | QDir::NoDotAndDotDot);
 
     // create proxy model
+    filteredFsModel_.setCanonicalRootPath(path_.canonicalPath());
     filteredFsModel_.setSourceModel(&fsModel_);
+
+    // TODO hardcoded patterns. Replace with something better
+    QList<QRegExp> ignoredFilePatterns;
+    for (QString pattern : {"*.o", "*.a", "*.so"})  {
+        ignoredFilePatterns << QRegExp(pattern, Qt::CaseSensitive, QRegExp::WildcardUnix);
+    }
+    filteredFsModel_.setIgnoredFilePatterns(ignoredFilePatterns);
+
+    QList<QRegExp> ignoredDirectoryPatterns;
+    ignoredDirectoryPatterns << QRegExp("build", Qt::CaseSensitive, QRegExp::WildcardUnix);
+    filteredFsModel_.setIgnoredDirectoryPatterns(ignoredDirectoryPatterns);
 
     connect(&fsModel_, &QFileSystemModel::directoryLoaded, this, &Project::onDirectoryLoaded);
 
@@ -41,6 +83,7 @@ Project::Project():
 void Project::setPath(const QDir& path) {
     path_ = path;
     fsModel_.setRootPath(path.path());
+    filteredFsModel_.setCanonicalRootPath(path.canonicalPath());
     fileListCache_.reset();
     emit(pathChanged(path));
 }

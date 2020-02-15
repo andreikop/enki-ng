@@ -21,34 +21,6 @@ class FileSystemModel: public QFileSystemModel {
     }
 };
 
-/* Model filters out files using negative filter.
-i.e. does not show .o .pyc and other temporary files
-*/
-class FileBrowserFilteredModel: public QSortFilterProxyModel {
-	using QSortFilterProxyModel::QSortFilterProxyModel;
-
-    //Column count for the model
-    int columnCount(const QModelIndex& = QModelIndex()) const override {
-        return 1;
-    }
-
-    // Check if node has children. QAbstractItemModel standard method
-    bool hasChildren(const QModelIndex& parent=QModelIndex()) const override {
-        return sourceModel()->hasChildren(mapToSource(parent));
-    }
-
-    // Main method. Check if file matches filter
-    // TODO implement
-    bool filterAcceptsRow(int /*sourceRow*/, const QModelIndex& /*sourceParent*/) const override {
-#if 0
-        if sourceParent == QModelIndex():
-            return True
-        return not core.fileFilter().regExp().match(sourceParent.child(sourceRow, 0).data())
-#else
-    return true;
-#endif
-    }
-};
 
 FileTree::FileTree(QDockWidget* parent):
     QTreeView(parent)
