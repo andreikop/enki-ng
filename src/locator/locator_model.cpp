@@ -46,7 +46,7 @@ QString formatFilePath(const QString& filePath, QString filterText) {
     for (auto pathIt = filePath.rbegin(); pathIt != filePath.rend(); ++pathIt) {
         QChar pathCh = *pathIt;
 
-        if (filterIt != filterText.rend() && *filterIt == pathCh) {
+        if (filterIt != filterText.rend() && (*filterIt).toLower() == pathCh.toLower()) {
             resultParts << QString("<b>%1</b>").arg(pathCh);
             ++filterIt;
         } else {
@@ -107,7 +107,7 @@ void LocatorModel::setCommandText(const QString& text) {
 
     items_.clear();
     foreach(const QString& filePath, core().project().fileList()) {
-        double score = getFileScore(filePath, text);
+        double score = getFileScore(filePath.toLower(), text.toLower());
         if (score >= 0) {
             items_.push_back(Item{score, filePath});
         }
