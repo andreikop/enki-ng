@@ -1,5 +1,7 @@
 #include <QDebug>
 
+#include "core.h"
+
 #include "project.h"
 
 
@@ -13,12 +15,12 @@ int FilteredFsModel::columnCount(const QModelIndex& /*parent*/) const {
     return 1;
 }
 
-void FilteredFsModel::setIgnoredFilePatterns(const QList<QRegExp>& patterns) {
-    ignoredFileWildcards_ = patterns;
+void FilteredFsModel::setIgnoredFilePatterns(const QStringList& patterns) {
+    ignoredFileWildcards_ = fromStringList(patterns);
 }
 
-void FilteredFsModel::setIgnoredDirectoryPatterns(const QList<QRegExp>& patterns) {
-    ignoredDirectoryWildcards_ = patterns;
+void FilteredFsModel::setIgnoredDirectoryPatterns(const QStringList& patterns) {
+    ignoredDirectoryWildcards_ = fromStringList(patterns);
 }
 
 void FilteredFsModel::setCanonicalRootPath(const QString& path) {
@@ -53,7 +55,17 @@ bool FilteredFsModel::wildcardListMatches(const QList<QRegExp>& wildcards, const
     return false;
 }
 
-Project::Project():
+QList<QRegExp> FilteredFsModel::fromStringList(const QStringList& wildcards) {
+    QList<QRegExp> result;
+
+    foreach(const QString& pattern, wildcards) {
+        result << QRegExp(pattern, Qt::CaseSensitive, QRegExp::WildcardUnix);
+    }
+
+    return result;
+}
+
+Project::Project(const Settings& settings):
     path_(QDir::current())
 {
     // setRootPath for the model wasn't called to avoid monitoring home dir
@@ -63,17 +75,8 @@ Project::Project():
     // create proxy model
     filteredFsModel_.setCanonicalRootPath(path_.canonicalPath());
     filteredFsModel_.setSourceModel(&fsModel_);
-
-    // TODO hardcoded patterns. Replace with something better
-    QList<QRegExp> ignoredFilePatterns;
-    for (QString pattern : {"*.o", "*.a", "*.so"})  {
-        ignoredFilePatterns << QRegExp(pattern, Qt::CaseSensitive, QRegExp::WildcardUnix);
-    }
-    filteredFsModel_.setIgnoredFilePatterns(ignoredFilePatterns);
-
-    QList<QRegExp> ignoredDirectoryPatterns;
-    ignoredDirectoryPatterns << QRegExp("build", Qt::CaseSensitive, QRegExp::WildcardUnix);
-    filteredFsModel_.setIgnoredDirectoryPatterns(ignoredDirectoryPatterns);
+    filteredFsModel_.setIgnoredFilePatterns(settings.ignoredFilePatterns());
+    filteredFsModel_.setIgnoredDirectoryPatterns(settings.ignoredDirectoryPatterns());
 
     connect(&fsModel_, &QFileSystemModel::directoryLoaded, this, &Project::onDirectoryLoaded);
 

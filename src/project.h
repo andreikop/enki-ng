@@ -8,6 +8,8 @@
 #include <QSortFilterProxyModel>
 #include <QRegExp>
 
+#include "settings.h"
+
 /* This class provides API to work with current project.
 
 Project for Enki is a directory with files
@@ -22,8 +24,8 @@ public:
     // FileTree needs only one column, but probably it should implement own model
     int columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
-    void setIgnoredFilePatterns(const QList<QRegExp>& patterns);
-    void setIgnoredDirectoryPatterns(const QList<QRegExp>& patterns);
+    void setIgnoredFilePatterns(const QStringList& patterns);
+    void setIgnoredDirectoryPatterns(const QStringList& patterns);
     void setCanonicalRootPath(const QString& path);
 
 protected:
@@ -31,6 +33,7 @@ protected:
 
 private:
     static bool wildcardListMatches(const QList<QRegExp>& wildcards, const QFileInfo& fInfo);
+    static QList<QRegExp> fromStringList(const QStringList& wildcards);
 
     QList<QRegExp> ignoredFileWildcards_;
     QList<QRegExp> ignoredDirectoryWildcards_;
@@ -41,7 +44,7 @@ private:
 class Project: public QObject {
     Q_OBJECT
 public:
-    Project();
+    Project(const Settings& settings);
     void setPath(const QDir& path);
     QDir path() const;
 

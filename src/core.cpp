@@ -8,7 +8,8 @@
 Core* Core::instance_ = nullptr;
 
 Core::Core():
-    workspace_(&mainWindow_)
+    workspace_(&mainWindow_),
+    project_(settings_)
 {
     instance_ = this;
     modules_.append(new SearchController());
@@ -32,6 +33,10 @@ Workspace& Core::workspace() {
 
 Project& Core::project() {
     return project_;
+}
+
+Settings& Core::settings() {
+    return settings_;
 }
 
 Core& core() {

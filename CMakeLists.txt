@@ -13,7 +13,6 @@ set(QUTEPART_MIN_REQUIRED_VERSION 0.1.0)  # need at least this version
 set(QUTEPART_MAX_REQUIRED_VERSION 2.0.0)  # but not this version
 
 
-
 if(NOT QUTEPART_SRC_DIR STREQUAL "")
     add_subdirectory(${QUTEPART_SRC_DIR} qutepart)
     if (NOT DEFINED QUTEPART_VERSION)
@@ -66,6 +65,7 @@ set(enki_SRCS
     src/workspace.cpp
     src/menu_bar.cpp
     src/project.cpp
+    src/settings.cpp
     src/locator/locator.cpp
     src/locator/locator_dialog.cpp
     src/locator/locator_model.cpp
@@ -83,7 +83,6 @@ QT5_WRAP_UI(enki_FORMS_HEADERS ${enki_FORMS})
 include_directories(src)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Build example executable
 add_executable(enki-ng ${enki_SRCS} ${enki_FORMS_HEADERS})
 
 target_link_libraries(enki-ng Qt5::Core Qt5::Widgets qutepart)
