@@ -95,6 +95,10 @@ public:
         return index(editors_.indexOf(editor), 0);
     }
 
+    Editor* getEditorByIndex(const QModelIndex& index) const {
+        return editors_[index.row()];
+    }
+
 private slots:
     void onEditorOpened(Editor* editor) {
         int index = editors_.indexOf(editor);
@@ -122,24 +126,27 @@ private:
 class FileExplorerTreeView: public QTreeView {
 public:
     FileExplorerTreeView(QWidget* parent, Workspace* workspace):
-        QTreeView(parent)
+        QTreeView(parent),
+        workspace_(workspace)
     {
         setHeaderHidden(true);
         setRootIsDecorated(false);
         setTextElideMode(Qt::ElideMiddle);
         setUniformRowHeights(true);
 
-        m_model = new OpenedFileModel(this, workspace);
-        setModel(m_model);
+        model_ = new OpenedFileModel(this, workspace);
+        setModel(model_);
 
         connect(workspace, &Workspace::currentEditorChanged,
                 this, &FileExplorerTreeView::onCurrentEditorChanged);
+        connect(this, &QAbstractItemView::clicked,
+                this, &FileExplorerTreeView::onItemClicked);
     }
 
 private slots:
 
     void onCurrentEditorChanged(Editor* editor) {
-        QModelIndex index = m_model->editorIndex(editor);
+        QModelIndex index = model_->editorIndex(editor);
 
         // startModifyModel()
         setCurrentIndex(index);
@@ -147,8 +154,14 @@ private slots:
         // self.finishModifyModel()
     }
 
+    void onItemClicked(const QModelIndex& index) {
+        Editor* editor = model_->getEditorByIndex(index);
+        workspace_->setCurrentEditor(editor);
+    }
+
 private:
-    OpenedFileModel* m_model;
+    OpenedFileModel* model_;
+    Workspace* workspace_;
 };
 
 

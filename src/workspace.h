@@ -24,6 +24,7 @@ public:
 
     const QList<Editor*>& editors() const;
     Editor* currentEditor() const;
+    void setCurrentEditor(Editor*);
 
 public slots:
     void focusCurrentEditor() const;
@@ -46,7 +47,6 @@ private:
 
     void addEditor(Editor*);
     void removeEditor(Editor*);
-    void setCurrentEditor(Editor*);
 
     void switchFile(int offset);
 
