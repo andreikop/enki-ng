@@ -34,11 +34,11 @@ T Settings::getWithDefault(const QString& key, const T& defaultVal) const {
 }
 
 Settings::Defaults::Defaults() {
-    for (QString pattern: {"*.o", "*.a", "*.so"}) {
+    for (QString pattern: {"*.o", "*.a", "*.so", "*.pyc"}) {
         ignoredFilePatterns << pattern;
     }
 
-    for (QString pattern: {".git", ".svn"}) {
+    for (QString pattern: {".git", ".svn", "__pycache__"}) {
         ignoredDirectoryPatterns << pattern;
     }
 }
