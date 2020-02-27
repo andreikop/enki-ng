@@ -20,10 +20,12 @@ public:
 
     QMenu* searchMenu() const;
     QMenu* goToMenu() const;
+    QMenu* editorMenu() const;
 
 private:
 
     QAction* fileQuitAction_;
     QMenu* searchMenu_;
     QMenu* goToMenu_;
+    QMenu* editorMenu_;
 };

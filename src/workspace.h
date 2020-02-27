@@ -36,7 +36,7 @@ signals:
 
 private:
     QStackedWidget* m_widget; // owned by the main window
-    QMainWindow* m_mainWindow;
+    MainWindow* mainWindow_;
 
     QList<Editor*> m_editors;
     Editor* m_currentEditor;
@@ -49,6 +49,8 @@ private:
     void setCurrentEditor(Editor*);
 
     void switchFile(int offset);
+
+    void setActionsInEditorMenu(Editor* editor);
 
 private slots:
     void onFileOpen();

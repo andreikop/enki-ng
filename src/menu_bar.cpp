@@ -39,6 +39,8 @@ MenuBar::MenuBar(QMainWindow* parent):
     QMenu* navigationMenu = addMenu("Navigation");
     searchMenu_ = navigationMenu->addMenu("Search and Replace");
 
+    editorMenu_ = addMenu("Editor");
+
     goToMenu_ = addMenu("Go To");
 }
 
@@ -48,4 +50,8 @@ QMenu* MenuBar::searchMenu() const {
 
 QMenu* MenuBar::goToMenu() const {
     return goToMenu_;
+}
+
+QMenu* MenuBar::editorMenu() const {
+    return editorMenu_;
 }
