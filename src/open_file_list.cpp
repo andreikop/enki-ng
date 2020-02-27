@@ -1,4 +1,4 @@
-#include <QTreeView>
+#include <QListView>
 #include <QFileInfo>
 #include <QDebug>
 
@@ -123,24 +123,21 @@ private:
     QIcon transparentIcon_;
 };
 
-class OpenFileListTreeView: public QTreeView {
+class OpenFileListView: public QListView {
 public:
-    OpenFileListTreeView(QWidget* parent, Workspace* workspace):
-        QTreeView(parent),
+    OpenFileListView(QWidget* parent, Workspace* workspace):
+        QListView(parent),
         workspace_(workspace)
     {
-        setHeaderHidden(true);
-        setRootIsDecorated(false);
         setTextElideMode(Qt::ElideMiddle);
-        setUniformRowHeights(true);
 
         model_ = new OpenedFileModel(this, workspace);
         setModel(model_);
 
         connect(workspace, &Workspace::currentEditorChanged,
-                this, &OpenFileListTreeView::onCurrentEditorChanged);
+                this, &OpenFileListView::onCurrentEditorChanged);
         connect(this, &QAbstractItemView::clicked,
-                this, &OpenFileListTreeView::onItemClicked);
+                this, &OpenFileListView::onItemClicked);
     }
 
 private slots:
@@ -171,7 +168,7 @@ OpenFileList::OpenFileList(QMainWindow *mainWindow, Workspace *workspace):
     setAllowedAreas(Qt::LeftDockWidgetArea);
     setFeatures(QDockWidget::DockWidgetClosable);
 
-    OpenFileListTreeView* treeView = new OpenFileListTreeView(this, workspace);
+    OpenFileListView* treeView = new OpenFileListView(this, workspace);
 
     setWidget(treeView);
     mainWindow->addDockWidget(Qt::LeftDockWidgetArea, this);
