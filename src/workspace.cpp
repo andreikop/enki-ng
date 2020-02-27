@@ -86,7 +86,7 @@ QString Workspace::readFile(const QString& filePath) {
     }
 
     QByteArray data = file.readAll();
-    if (data.isEmpty() && ( ! file.errorString().isEmpty())) {
+    if (data.length() != file.size()) {
         showError("Failed to open file",
             QString("Failed to read file %0: %1").arg(filePath, file.errorString()));
         return QString::null;
