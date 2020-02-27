@@ -57,6 +57,22 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
     editor->qutepart().setFocus();
 }
 
+void Workspace::createEmptyNotSavedFile(const QString& path) {
+    QFileInfo fInfo(path);
+    QString absPath = path;
+    if ( ! fInfo.isAbsolute()) {
+        absPath = QDir::current().filePath(path);  // make absolute
+    }
+
+    Editor *editor = new Editor(absPath, QString::null, mainWindow_);
+
+    editor->qutepart().document()->setModified(true);
+
+    addEditor(editor);
+    setCurrentEditor(editor);
+    editor->qutepart().setFocus();
+}
+
 const QList<Editor*>& Workspace::editors() const {
     return m_editors;
 }
