@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QDebug>
 
-#include "file_explorer.h"
+#include "open_file_list.h"
 
 #include "workspace.h"
 
@@ -18,7 +18,7 @@ Workspace::Workspace(MainWindow* mainWindow):
 {
     mainWindow->setWorkspace(m_widget);
 
-    new FileExplorer(mainWindow_, this);
+    new OpenFileList(mainWindow_, this);
 
     connect(mainWindow->menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow->menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);

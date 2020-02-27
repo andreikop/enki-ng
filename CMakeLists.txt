@@ -60,7 +60,7 @@ set(enki_SRCS
     src/core.cpp
     src/editor.cpp
     src/enki.cpp
-    src/file_explorer.cpp
+    src/open_file_list.cpp
     src/main_window.cpp
     src/workspace.cpp
     src/menu_bar.cpp

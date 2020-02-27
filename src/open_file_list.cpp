@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #include "editor.h"
-#include "file_explorer.h"
+#include "open_file_list.h"
 
 
 namespace {
@@ -16,7 +16,7 @@ namespace {
 
 class OpenedFileModel: public QAbstractItemModel {
     /* Model which shows the list of opened files
-     * in the tree view (FileExplorer)
+     * in the tree view (OpenFileList)
      * It switches current file, does file sorting
      */
 public:
@@ -123,9 +123,9 @@ private:
     QIcon transparentIcon_;
 };
 
-class FileExplorerTreeView: public QTreeView {
+class OpenFileListTreeView: public QTreeView {
 public:
-    FileExplorerTreeView(QWidget* parent, Workspace* workspace):
+    OpenFileListTreeView(QWidget* parent, Workspace* workspace):
         QTreeView(parent),
         workspace_(workspace)
     {
@@ -138,9 +138,9 @@ public:
         setModel(model_);
 
         connect(workspace, &Workspace::currentEditorChanged,
-                this, &FileExplorerTreeView::onCurrentEditorChanged);
+                this, &OpenFileListTreeView::onCurrentEditorChanged);
         connect(this, &QAbstractItemView::clicked,
-                this, &FileExplorerTreeView::onItemClicked);
+                this, &OpenFileListTreeView::onItemClicked);
     }
 
 private slots:
@@ -165,13 +165,13 @@ private:
 };
 
 
-FileExplorer::FileExplorer(QMainWindow *mainWindow, Workspace *workspace):
+OpenFileList::OpenFileList(QMainWindow *mainWindow, Workspace *workspace):
     QDockWidget("Open Files", mainWindow)
 {
     setAllowedAreas(Qt::LeftDockWidgetArea);
     setFeatures(QDockWidget::DockWidgetClosable);
 
-    FileExplorerTreeView* treeView = new FileExplorerTreeView(this, workspace);
+    OpenFileListTreeView* treeView = new OpenFileListTreeView(this, workspace);
 
     setWidget(treeView);
     mainWindow->addDockWidget(Qt::LeftDockWidgetArea, this);
