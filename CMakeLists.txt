@@ -14,7 +14,7 @@ set(QUTEPART_MAX_REQUIRED_VERSION 2.0.0)  # but not this version
 
 
 if(NOT QUTEPART_SRC_DIR STREQUAL "")
-    add_subdirectory(${QUTEPART_SRC_DIR} qutepart)
+    add_subdirectory(${QUTEPART_SRC_DIR} qutepart EXCLUDE_FROM_ALL)
     if (NOT DEFINED QUTEPART_VERSION)
         message(FATAL_ERROR
             "Are you sure " ${QUTEPART_SRC_DIR} " directory contains Qutepart? "
