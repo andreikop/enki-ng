@@ -16,7 +16,7 @@ public:
     void saveFile();
 
 private:
-    QString m_filePath;
-    Qutepart::Qutepart m_qutepart;
+    QString filePath_;
+    Qutepart::Qutepart qutepart_;
 };
 

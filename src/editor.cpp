@@ -3,27 +3,31 @@
 #include <QFile>
 #include <QMessageBox>
 
+#include "core.h"
+
 #include "editor.h"
 
 
 Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent):
-    m_filePath(filePath),
-    m_qutepart(parent, text)
+    filePath_(filePath),
+    qutepart_(parent, text)
 {
     Qutepart::LangInfo langInfo = Qutepart::chooseLanguage(
         QString::null, QString::null, filePath);
     if (langInfo.isValid()) {
-        m_qutepart.setHighlighter(langInfo.id);
-        m_qutepart.setIndentAlgorithm(langInfo.indentAlg);
+        qutepart_.setHighlighter(langInfo.id);
+        qutepart_.setIndentAlgorithm(langInfo.indentAlg);
     }
+
+    qutepart_.setFont(QFont(core().settings().fontFamily(), core().settings().fontSize()));
 }
 
 const QString& Editor::filePath() const {
-    return m_filePath;
+    return filePath_;
 }
 
 Qutepart::Qutepart& Editor::qutepart() {
-    return m_qutepart;
+    return qutepart_;
 }
 
 void Editor::saveFile() {
@@ -31,10 +35,10 @@ void Editor::saveFile() {
     // asume directory exists
 
     // TODO prepare text for saving. i.e. remove blank lines
-    QByteArray data = m_qutepart.document()->toPlainText().toUtf8();
+    QByteArray data = qutepart_.document()->toPlainText().toUtf8();
 
     // TODO disable file watcher
-    QFile file(m_filePath);
+    QFile file(filePath_);
     bool ok = file.open(QIODevice::WriteOnly);
     if ( ! ok) {
         QMessageBox::critical(
@@ -54,7 +58,7 @@ void Editor::saveFile() {
     }
 
     // TODO enable file watcher
-    m_qutepart.document()->setModified(false);
+    qutepart_.document()->setModified(false);
 
     // TODO update state flags
     // TODO detect syntax if file name changed
