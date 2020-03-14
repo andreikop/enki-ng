@@ -4,6 +4,11 @@
 
 #include "project.h"
 
+namespace {
+
+const int LOADED_DIRECTORIES_LIMIT = 256;
+
+}
 
 QFileInfo FilteredFsModel::fileInfo(const QModelIndex& index) const {
     QModelIndex sourceIndex = mapToSource(index);
@@ -66,7 +71,8 @@ QList<QRegExp> FilteredFsModel::fromStringList(const QStringList& wildcards) {
 }
 
 Project::Project(const Settings& settings):
-    path_(QDir::current())
+    path_(QDir::current()),
+    countOfLoadedDirectories_(0)
 {
     // setRootPath for the model wasn't called to avoid monitoring home dir
     fsModel_.setNameFilterDisables(false);
@@ -88,6 +94,7 @@ void Project::setPath(const QDir& path) {
     fsModel_.setRootPath(path.path());
     filteredFsModel_.setCanonicalRootPath(path.canonicalPath());
     fileListCache_.reset();
+    countOfLoadedDirectories_ = 0;
     emit(pathChanged(path));
 }
 
@@ -134,10 +141,15 @@ void Project::startChildNodeLoading(const QString& directory) {
     }
 }
 
-void Project::onDirectoryLoaded(const QString& directory) {
+void Project::onDirectoryLoaded(const QString& directory ) {
+    if (countOfLoadedDirectories_ > LOADED_DIRECTORIES_LIMIT) {
+        return;
+    }
+
     fileListCache_.reset();
 
     startChildNodeLoading(directory);
+    countOfLoadedDirectories_++;
 
     // TODO delay signal until finished loading children?
     emit(fileListUpdated());

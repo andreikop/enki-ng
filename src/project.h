@@ -74,6 +74,12 @@ private:
     QFileSystemModel fsModel_;
     FilteredFsModel filteredFsModel_;
 
+    /* Count of directories automatically loaded by filteredFsModel_
+    We limit count of loaded directories to avoid freezing Enki and
+    exosting system inotify limit
+    */
+    int countOfLoadedDirectories_;
+
     std::unique_ptr<QStringList> fileListCache_;
 
     void findFilesRecursively(const QModelIndex& filteredModelIndex, QStringList& result);
