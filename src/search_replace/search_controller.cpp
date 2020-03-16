@@ -210,6 +210,7 @@ void SearchController::searchFile(Direction direction, IncrementalMode increment
     // Show results
     if (res.isValid()) {
         qutepart->setTextCursor(res.cursor);
+        qutepart->centerCursor();
         searchInFileLastCursorPos_ = res.cursor.position();
         searchWidget_->setState(SearchWidget::GOOD);  // change background acording to result
         core().mainWindow().statusBar()->showMessage(
