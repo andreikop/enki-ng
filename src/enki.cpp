@@ -1,4 +1,7 @@
+#include <iostream>
+
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QFile>
 #include <QDebug>
 
@@ -13,28 +16,56 @@ struct FileToOpen {
 };
 
 struct CommandLine {
+    CommandLine():
+        debugLogs(false)
+    {}
+
     QList<FileToOpen> existingFiles;
     QStringList notExistingFiles;
+    bool debugLogs;
 };
 
 
 namespace {
 
-CommandLine parseCommandLine(int argc, char** argv) {
+const QCommandLineOption debugLogsOption ({"d", "debug"}, "Print debug logs.");
+
+void initCommandLineParser(QCommandLineParser& parser) {
+    parser.setApplicationDescription("A text editor for programmers. https://enki-editor.org");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    parser.addOption(debugLogsOption);
+}
+
+CommandLine getCmdLineArguments(const QCommandLineParser& parser) {
     CommandLine result;
 
-    for (int fileIndex = 1; fileIndex < argc; fileIndex++) {
-        QString filePath = argv[fileIndex];
-
-        QFileInfo fInfo = QFileInfo(filePath);
+    for (const QString& arg: parser.positionalArguments()) {
+        QFileInfo fInfo = QFileInfo(arg);
         if (fInfo.exists()) {
-            result.existingFiles << FileToOpen{filePath, -1};
+            result.existingFiles << FileToOpen{arg, -1};
         } else {
-            result.notExistingFiles << filePath;
+            result.notExistingFiles << arg;
         }
     }
 
+    result.debugLogs = parser.isSet(debugLogsOption);
+
     return result;
+}
+
+void verboseLogHandler(QtMsgType /*type*/, const QMessageLogContext &/*context*/, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    std::cout << localMsg.constData() << std::endl;
+    // TODO print context information. See qInstallMessageHandler function docs
+}
+
+void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+    if (type > QtDebugMsg) {
+        verboseLogHandler(type, context, msg);
+    }
 }
 
 }  // anonymous namespace
@@ -42,9 +73,20 @@ CommandLine parseCommandLine(int argc, char** argv) {
 int main(int argc, char** argv) {
     Q_INIT_RESOURCE(qutepart_syntax_files);
 
-    CommandLine cmdLine = parseCommandLine(argc, argv);
-
     QApplication app(argc, argv);
+    app.setApplicationName("Enki Editor");
+    app.setApplicationVersion("0.0.1");
+
+    QCommandLineParser cmdLineParser;
+    initCommandLineParser(cmdLineParser);
+    cmdLineParser.process(app);
+    CommandLine cmdLine = getCmdLineArguments(cmdLineParser);
+
+    if (cmdLine.debugLogs) {
+        qInstallMessageHandler(verboseLogHandler);
+    } else {
+        qInstallMessageHandler(logHandler);
+    }
 
     Core core;
 
