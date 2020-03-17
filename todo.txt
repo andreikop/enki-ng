@@ -1,3 +1,2 @@
-Support +line notation when opening files
 Mute parser warnings
 Add the application launcher

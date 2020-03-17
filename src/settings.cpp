@@ -6,52 +6,6 @@
 
 namespace {
 
-const QString IGNORED_FILE_PATTERNS = "projects/ignored_file_patterns";
-const QString IGNORED_DIRECTORY_PATTERNS = "projects/ignored_directory_patterns";
-
-const QString FONT_FAMILY = "editor/font_family";
-const QString FONT_SIZE = "editor/font_size";
-}  // anonymous namespace
-
-Settings::Settings():
-    storage_("Enki", "enki")
-{}
-
-QStringList Settings::ignoredFilePatterns() const {
-    return getWithDefault<QStringList>(
-        IGNORED_FILE_PATTERNS,
-        defaults_.ignoredFilePatterns);
-}
-
-QStringList Settings::ignoredDirectoryPatterns() const {
-    return getWithDefault<QStringList>(
-        IGNORED_DIRECTORY_PATTERNS,
-        defaults_.ignoredDirectoryPatterns);
-}
-
-QString Settings::fontFamily() const {
-    return getWithDefault<QString>(
-        FONT_FAMILY,
-        defaults_.fontFamily);
-}
-
-int Settings::fontSize() const {
-    return getWithDefault<int>(
-        FONT_SIZE,
-        defaults_.fontSize);
-}
-
-template<class T>
-T Settings::getWithDefault(const QString& key, const T& defaultVal) const {
-    if (storage_.contains(key)) {
-        return storage_.value(key).value<T>();
-    } else {
-        return defaultVal;
-    }
-}
-
-namespace {
-
 // Default font family, which depend on platform
 QString defaultFontFamily() {
     /*
@@ -74,15 +28,42 @@ QString defaultFontFamily() {
 }
 }  // anonymous namespace
 
-Settings::Defaults::Defaults() {
-    for (QString pattern: {"*.o", "*.a", "*.so", "*.pyc"}) {
-        ignoredFilePatterns << pattern;
-    }
 
-    for (QString pattern: {".git", ".svn", "__pycache__"}) {
-        ignoredDirectoryPatterns << pattern;
-    }
+Settings::Settings():
+    storage_("Enki", "enki"),
+    fontSize_("editor/font_size", QApplication::font().pointSize()),
+    fontFamily_("editor/font_family", defaultFontFamily()),
+    ignoredFilePatterns_(
+        "projects/ignored_file_patterns",
+        {"*.o", "*.a", "*.so", "*.pyc"}),
+    ignoredDirectoryPatterns_(
+        "projects/ignored_directory_patterns",
+        {".git", ".svn", "__pycache__"})
+{}
 
-    fontFamily = defaultFontFamily();
-    fontSize = QApplication::font().pointSize();
+QStringList Settings::ignoredFilePatterns() const {
+    return getOptionValue<QStringList>(ignoredFilePatterns_);
+}
+
+QStringList Settings::ignoredDirectoryPatterns() const {
+    return getOptionValue<QStringList>(ignoredDirectoryPatterns_);
+}
+
+QString Settings::fontFamily() const {
+    return getOptionValue<QString>(fontFamily_);
+}
+
+int Settings::fontSize() const {
+    return getOptionValue<int>(fontSize_);
+}
+
+template<class T>
+T Settings::getOptionValue(const Option<T>& option) const {
+    const QString& key = option.key();
+
+    if (storage_.contains(key)) {
+        return storage_.value(key).value<T>();
+    } else {
+        return option.defaultValue();
+    }
 }
