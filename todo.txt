@@ -1,2 +1,5 @@
++line notation to open files
+Open directory functionality
 Mute parser warnings
-Add the application launcher
+Include file name to path to make sure the names are unique
+New line at end of file

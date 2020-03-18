@@ -89,3 +89,22 @@ target_link_libraries(enki-ng Qt5::Core Qt5::Widgets qutepart)
 target_compile_options(enki-ng PRIVATE -Wall -Wextra -pedantic -Werror)
 
 install(TARGETS enki-ng DESTINATION bin)
+
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
+    install(
+        FILES install/enki.desktop
+        DESTINATION /usr/share/applications)
+    install(
+        FILES icons/logo/48x48/enki.png
+        DESTINATION /usr/share/pixmaps)
+    install(
+        FILES icons/logo/32x32/enki.png
+        DESTINATION /usr/share/icons/hicolor/32x32/apps)
+    install(
+        FILES icons/logo/48x48/enki.png
+        DESTINATION /usr/share/icons/hicolor/48x48/apps)
+    install(
+        FILES icons/logo/enki.svg
+        DESTINATION /usr/share/icons/hicolor/scalable/apps)
+endif()
