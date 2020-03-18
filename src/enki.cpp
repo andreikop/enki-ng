@@ -38,13 +38,27 @@ void initCommandLineParser(QCommandLineParser& parser) {
     parser.addOption(debugLogsOption);
 }
 
-CommandLine getCmdLineArguments(const QCommandLineParser& parser) {
+CommandLine getCmdLineArguments(bool &ok, const QCommandLineParser& parser) {
     CommandLine result;
+    ok = false;
 
-    for (const QString& arg: parser.positionalArguments()) {
+    QStringList posArgs = parser.positionalArguments();
+    while ( ! posArgs.empty()) {
+        QString arg = posArgs.takeFirst();
         QFileInfo fInfo = QFileInfo(arg);
         if (fInfo.exists()) {
-            result.existingFiles << FileToOpen{arg, -1};
+            int line = -1;
+            if ( (! posArgs.empty()) and posArgs[0].startsWith('+')) {
+                QString lineArg = posArgs.takeFirst().mid(1);  // next argument without +
+                bool convOk = false;
+                line = int(lineArg.toLong(&convOk));
+                if ( ! convOk) {
+                    qCritical() << "For file" << arg << "specified incorrect line number" << lineArg;
+                    return result;
+                }
+            }
+
+            result.existingFiles << FileToOpen{arg, line};
         } else {
             result.notExistingFiles << arg;
         }
@@ -52,6 +66,7 @@ CommandLine getCmdLineArguments(const QCommandLineParser& parser) {
 
     result.debugLogs = parser.isSet(debugLogsOption);
 
+    ok = true;
     return result;
 }
 
@@ -80,7 +95,12 @@ int main(int argc, char** argv) {
     QCommandLineParser cmdLineParser;
     initCommandLineParser(cmdLineParser);
     cmdLineParser.process(app);
-    CommandLine cmdLine = getCmdLineArguments(cmdLineParser);
+
+    bool cmdLineOk = false;
+    CommandLine cmdLine = getCmdLineArguments(cmdLineOk, cmdLineParser);
+    if ( ! cmdLineOk) {
+        return -1;
+    }
 
     if (cmdLine.debugLogs) {
         qInstallMessageHandler(verboseLogHandler);
@@ -91,7 +111,7 @@ int main(int argc, char** argv) {
     Core core;
 
     for (const auto& f: cmdLine.existingFiles) {
-        core.workspace().openFile(f.path);
+        core.workspace().openFile(f.path, f.line);
     }
 
     for (const auto& path: cmdLine.notExistingFiles) {

@@ -1,5 +1,14 @@
-+line notation to open files
+Work critical
+
+Current file is not changed if item is dragged in Open Files
+New line at end of file
+Strip trailing whitespace
 Open directory functionality
+Braches are not highlighted on current line
+
+
+Application icon
 Mute parser warnings
 Include file name to path to make sure the names are unique
-New line at end of file
+Invalid external context "#CheckForString"
+Ignore dirs and files from gitignore

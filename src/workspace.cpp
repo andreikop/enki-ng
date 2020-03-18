@@ -1,10 +1,11 @@
-#include <QFile>
-#include <QFileDialog>
-#include <QTextCodec>
-#include <QFileInfo>
-#include <QStatusBar>
-#include <QMessageBox>
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTextCodec>
+#include <QStatusBar>
+#include <QTimer>
 
 #include "open_file_list.h"
 
@@ -34,12 +35,11 @@ Workspace::~Workspace() {
     }
 }
 
-void Workspace::openFile(const QString& filePath, int /*line*/) {
+void Workspace::openFile(const QString& filePath, int line) {
     QFileInfo fileInfo(filePath);
 
     if ( ! fileInfo.exists()) {
         showError("Failed to open file", QString("File '%0' does not exist").arg(filePath));
-        qDebug() << filePath;
         return;
     }
 
@@ -51,6 +51,11 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
     }
 
     Editor *editor = new Editor(canonicalPath, text, mainWindow_);
+    if (line != -1) {
+        editor->qutepart().goToLine(line);
+        // centerCursor() is not effective until windet is drawn. Therefore using timer
+        QTimer::singleShot(0, [editor] {editor->qutepart().centerCursor();});
+    }
 
     addEditor(editor);
     setCurrentEditor(editor);
