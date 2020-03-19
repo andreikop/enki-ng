@@ -127,7 +127,8 @@ class OpenFileListView: public QListView {
 public:
     OpenFileListView(QWidget* parent, Workspace* workspace):
         QListView(parent),
-        workspace_(workspace)
+        workspace_(workspace),
+        changingCurrent_(false)
     {
         setTextElideMode(Qt::ElideMiddle);
 
@@ -136,8 +137,6 @@ public:
 
         connect(workspace, &Workspace::currentEditorChanged,
                 this, &OpenFileListView::onCurrentEditorChanged);
-        connect(this, &QAbstractItemView::clicked,
-                this, &OpenFileListView::onItemClicked);
     }
 
 private slots:
@@ -146,19 +145,27 @@ private slots:
         QModelIndex index = model_->editorIndex(editor);
 
         // startModifyModel()
+        changingCurrent_ = true;
         setCurrentIndex(index);
+        changingCurrent_ = false;
+
         scrollTo(index);
         // self.finishModifyModel()
     }
 
-    void onItemClicked(const QModelIndex& index) {
-        Editor* editor = model_->getEditorByIndex(index);
+    void currentChanged(const QModelIndex& current, const QModelIndex& /* prev */) override {
+        if (changingCurrent_) {
+            return; // avoid infinite loop of signals and actions
+        }
+
+        Editor* editor = model_->getEditorByIndex(current);
         workspace_->setCurrentEditor(editor);
     }
 
 private:
     OpenedFileModel* model_;
     Workspace* workspace_;
+    bool changingCurrent_;
 };
 
 
