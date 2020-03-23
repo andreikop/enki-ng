@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QByteArray>
+#include <QDebug>
 #include <QFile>
 #include <QMessageBox>
 
@@ -10,7 +11,8 @@
 
 Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent):
     filePath_(filePath),
-    qutepart_(parent, text)
+    qutepart_(parent, text),
+    lineSeparator("\n")  // make configurable, autodetect
 {
     Qutepart::LangInfo langInfo = Qutepart::chooseLanguage(
         QString::null, QString::null, filePath);
@@ -34,8 +36,12 @@ void Editor::saveFile() {
     // assume file name is known
     // asume directory exists
 
-    // TODO prepare text for saving. i.e. remove blank lines
-    QByteArray data = qutepart_.document()->toPlainText().toUtf8();
+
+    // TODO prepare text for saving. i.e. remove trailing whitespace
+    stripTrailingWhitespace();
+
+    QString text = textForSaving();
+    QByteArray data = text.toUtf8();
 
     // TODO disable file watcher
     QFile file(filePath_);
@@ -62,4 +68,48 @@ void Editor::saveFile() {
 
     // TODO update state flags
     // TODO detect syntax if file name changed
+}
+
+QString Editor::textForSaving() const {
+    QStringList lines;
+    QTextBlock block = qutepart_.document()->firstBlock();
+    while (block.isValid()) {
+        lines << block.text();
+        block = block.next();
+    }
+
+    // TODO make configurable
+    // TODO edit document but not text
+    lines << "";  // to have EOL at end of file
+
+    return lines.join(lineSeparator);
+}
+
+namespace {
+
+int trailingSpaceCount(const QString& line) {
+    for(int i = line.size() - 1; i >= 0; i--) {
+        if ( ! line[i].isSpace()) {
+            return line.size() - i - 1;
+        }
+    }
+    return line.size();
+}
+
+}  // anonymous namespace
+
+void Editor::stripTrailingWhitespace() {
+    Qutepart::AtomicEditOperation op(&qutepart_);
+
+    QTextBlock block = qutepart_.document()->firstBlock();
+    while (block.isValid()) {
+        int trailingCount = trailingSpaceCount(block.text());
+        if (trailingCount) {
+            QTextCursor cursor(block);
+            cursor.setPosition(block.position() + block.length() - 1 - trailingCount);
+            cursor.setPosition(block.position() + block.length() - 1, QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
+        }
+        block = block.next();
+    }
 }

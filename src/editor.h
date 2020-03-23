@@ -18,5 +18,9 @@ public:
 private:
     QString filePath_;
     Qutepart::Qutepart qutepart_;
+    QString lineSeparator;
+
+    QString textForSaving() const;
+    void stripTrailingWhitespace();
 };
 
