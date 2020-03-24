@@ -71,15 +71,16 @@ void Editor::saveFile() {
 }
 
 QString Editor::textForSaving() const {
+    // TODO make configurable
+    if (qutepart_.lines().last().length() != 0) {
+        qutepart_.lines().append("");
+    }
+
     QStringList lines;
 
     for(const Qutepart::Line& line: qutepart_.lines()) {
         lines << line.text();
     }
-
-    // TODO make configurable
-    // TODO edit document but not text
-    lines << "";  // to have EOL at end of file
 
     return lines.join(lineSeparator);
 }
