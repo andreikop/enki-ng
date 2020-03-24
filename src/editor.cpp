@@ -72,10 +72,9 @@ void Editor::saveFile() {
 
 QString Editor::textForSaving() const {
     QStringList lines;
-    QTextBlock block = qutepart_.document()->firstBlock();
-    while (block.isValid()) {
+
+    for(const QTextBlock& block: qutepart_.lines()) {
         lines << block.text();
-        block = block.next();
     }
 
     // TODO make configurable
@@ -101,8 +100,7 @@ int trailingSpaceCount(const QString& line) {
 void Editor::stripTrailingWhitespace() {
     Qutepart::AtomicEditOperation op(&qutepart_);
 
-    QTextBlock block = qutepart_.document()->firstBlock();
-    while (block.isValid()) {
+    for(const QTextBlock& block: qutepart_.lines()) {
         int trailingCount = trailingSpaceCount(block.text());
         if (trailingCount) {
             QTextCursor cursor(block);
@@ -110,6 +108,5 @@ void Editor::stripTrailingWhitespace() {
             cursor.setPosition(block.position() + block.length() - 1, QTextCursor::KeepAnchor);
             cursor.removeSelectedText();
         }
-        block = block.next();
     }
 }
