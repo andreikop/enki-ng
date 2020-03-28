@@ -3,12 +3,15 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QFile>
+#include <QFileInfo>
 #include <QDebug>
 
 
 #include "qutepart/qutepart.h"
 
 #include "core.h"
+#include "workspace.h"
+#include "main_window.h"
 
 struct FileToOpen {
     QString path;
@@ -108,17 +111,15 @@ int main(int argc, char** argv) {
         qInstallMessageHandler(logHandler);
     }
 
-    Core core;
-
     for (const auto& f: cmdLine.existingFiles) {
-        core.workspace().openFile(f.path, f.line);
+        core().workspace().openFile(f.path, f.line);
     }
 
     for (const auto& path: cmdLine.notExistingFiles) {
-        core.workspace().createEmptyNotSavedFile(path);
+        core().workspace().createEmptyNotSavedFile(path);
     }
 
-    core.mainWindow().show();
+    core().mainWindow().show();
 
     return app.exec();
 }

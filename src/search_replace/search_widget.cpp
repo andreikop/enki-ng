@@ -6,6 +6,8 @@
 #include <QDebug>
 
 #include "core.h"
+#include "workspace.h"
+
 #include "search_widget.h"
 #include "search_flags.h"
 

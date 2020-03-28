@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "core.h"
+#include "option.h"
 
 #include "project.h"
 
@@ -70,7 +71,20 @@ QList<QRegExp> FilteredFsModel::fromStringList(const QStringList& wildcards) {
     return result;
 }
 
-Project::Project(const Settings& settings):
+
+namespace {
+
+Option<QStringList> ignoredFilePatterns(
+        "projects/ignored_file_patterns",
+        {"*.o", "*.a", "*.so", "*.pyc"});
+
+Option<QStringList> ignoredDirectoryPatterns(
+        "projects/ignored_directory_patterns",
+        {".git", ".svn", "__pycache__"});
+
+}  // anonymous namespace
+
+Project::Project():
     path_(QDir::current()),
     countOfLoadedDirectories_(0)
 {
@@ -81,8 +95,8 @@ Project::Project(const Settings& settings):
     // create proxy model
     filteredFsModel_.setCanonicalRootPath(path_.canonicalPath());
     filteredFsModel_.setSourceModel(&fsModel_);
-    filteredFsModel_.setIgnoredFilePatterns(settings.ignoredFilePatterns());
-    filteredFsModel_.setIgnoredDirectoryPatterns(settings.ignoredDirectoryPatterns());
+    filteredFsModel_.setIgnoredFilePatterns(ignoredFilePatterns.value());
+    filteredFsModel_.setIgnoredDirectoryPatterns(ignoredDirectoryPatterns.value());
 
     connect(&fsModel_, &QFileSystemModel::directoryLoaded, this, &Project::onDirectoryLoaded);
 

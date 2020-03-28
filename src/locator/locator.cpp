@@ -1,4 +1,5 @@
 #include "core.h"
+#include "main_window.h"
 #include "locator_dialog.h"
 
 #include "locator.h"

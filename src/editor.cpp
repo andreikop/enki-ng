@@ -5,9 +5,64 @@
 #include <QMessageBox>
 
 #include "core.h"
+#include "option.h"
+#include "workspace.h"
 
 #include "editor.h"
 
+
+namespace {
+
+// Default font family, which depend on platform
+QString defaultFontFamily() {
+    /*
+    Monaco - old Mac font,
+    Menlo - modern Mac font,
+    Consolas - default font for Windows Vista+
+    Lucida Console - on Windows XP
+    Monospace - default for other platforms
+    */
+
+    QStringList fontFamilies = {"Menlo", "Monaco", "Monospace", "Consolas", "Lucida Console"};
+    QStringList availableFontFamilies = QFontDatabase().families();
+    for(const auto& fontFamily: fontFamilies) {
+        if (availableFontFamilies.contains(fontFamily)) {
+            return fontFamily;
+        }
+    }
+
+    return "Monospace";
+}
+
+Option<int> fontSizeOption("editor/font_size", -1);
+Option<QString> fontFamilyOption("editor/font_family", QString::null);
+
+QString fontFamily() {
+    QString family = fontFamilyOption.value();
+
+    if (family.isNull()) {
+        // This value is not set as option default because QApplication
+        // doesn't exist when option is initialized
+        return defaultFontFamily();
+    }
+
+    return family;
+
+}
+
+int fontSize() {
+    int size = fontSizeOption.value();
+
+    if (size == -1) {
+        // This value is not set as option default because QApplication
+        // doesn't exist when option is initialized
+        return QApplication::font().pointSize();
+    }
+
+    return size;
+}
+
+}  // anonymous namespace
 
 Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent):
     filePath_(filePath),
@@ -21,7 +76,7 @@ Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent
         qutepart_.setIndentAlgorithm(langInfo.indentAlg);
     }
 
-    qutepart_.setFont(QFont(core().settings().fontFamily(), core().settings().fontSize()));
+    qutepart_.setFont(QFont(fontFamily(), fontSize()));
 }
 
 const QString& Editor::filePath() const {

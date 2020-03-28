@@ -44,7 +44,7 @@ private:
 class Project: public QObject {
     Q_OBJECT
 public:
-    Project(const Settings& settings);
+    Project();
     void setPath(const QDir& path);
     QDir path() const;
 

@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include "core.h"
+#include "project.h"
 
 #include "open_file_command.h"
 

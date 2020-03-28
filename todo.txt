@@ -1,9 +1,6 @@
 Work critical
 
-New line at end of file
-Strip trailing whitespace
 Open directory functionality
-
 
 Application icon
 Include file name to path to make sure the names are unique

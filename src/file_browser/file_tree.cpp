@@ -4,6 +4,8 @@
 #include <QDebug>
 
 #include "core.h"
+#include "project.h"
+#include "workspace.h"
 
 #include "file_tree.h"
 
