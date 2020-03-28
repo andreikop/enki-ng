@@ -36,6 +36,8 @@ QString defaultFontFamily() {
 
 Option<int> fontSizeOption("editor/font_size", -1);
 Option<QString> fontFamilyOption("editor/font_family", QString::null);
+Option<bool> stripTrailingWhitespaceOption("editor/strip_trailing_whitespace_on_save", true);
+Option<bool> eolAtEndOfFileOption("editor/append_eol_at_end_of_file", true);
 
 QString fontFamily() {
     QString family = fontFamilyOption.value();
@@ -92,8 +94,9 @@ void Editor::saveFile() {
     // asume directory exists
 
 
-    // TODO prepare text for saving. i.e. remove trailing whitespace
-    stripTrailingWhitespace();
+    if (stripTrailingWhitespaceOption.value()) {
+        stripTrailingWhitespace();
+    }
 
     QString text = textForSaving();
     QByteArray data = text.toUtf8();
@@ -126,9 +129,10 @@ void Editor::saveFile() {
 }
 
 QString Editor::textForSaving() const {
-    // TODO make configurable
-    if (qutepart_.lines().last().length() != 0) {
-        qutepart_.lines().append("");
+    if (eolAtEndOfFileOption.value()) {
+        if (qutepart_.lines().last().length() != 0) {
+            qutepart_.lines().append("");
+        }
     }
 
     QStringList lines;

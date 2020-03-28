@@ -4,11 +4,21 @@
 
 #include "settings.h"
 
-/* Internal option representation.
+/* Configurable by user application option.
+
 Contains key, type and default value
 
 Create an instance of an option in a module where you need some settings.
 The Option will load it's value from global settings.
+Typical usage:
+
+namespace {
+Option<QString> myStringOption("my/option_path", "Default value");
+}
+
+void MyClass::method() {
+    QString optionValue = myStringOption.value();
+}
 */
 
 template <class T>
