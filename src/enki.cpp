@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <QIcon>
 
 
 #include "qutepart/qutepart.h"
@@ -94,6 +95,7 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     app.setApplicationName("Enki Editor");
     app.setApplicationVersion("0.0.1");
+    app.setWindowIcon(QIcon(":/logo/48x48/enki.png"));
 
     QCommandLineParser cmdLineParser;
     initCommandLineParser(cmdLineParser);

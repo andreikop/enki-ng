@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>./logo/32x32/enki.png</file>
+<file>./logo/48x48/enki.png</file>
+<file>./logo/enki.svg</file>
+</qresource>
+</RCC>

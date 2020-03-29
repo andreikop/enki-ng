@@ -48,6 +48,7 @@ endif(NOT QUTEPART_SRC_DIR STREQUAL "")
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
 SET(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -57,6 +58,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
 set(enki_SRCS
+    icons/icons.qrc
     src/core.cpp
     src/editor.cpp
     src/enki.cpp
