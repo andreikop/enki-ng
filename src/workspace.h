@@ -37,11 +37,11 @@ signals:
     void modifiedChanged(Editor* editor, bool modified);
 
 private:
-    QStackedWidget* m_widget; // owned by the main window
+    QStackedWidget* widget_; // owned by the main window
     MainWindow* mainWindow_;
 
-    QList<Editor*> m_editors;
-    Editor* m_currentEditor;
+    QList<Editor*> editors_;
+    Editor* currentEditor_;
 
     QString readFile(const QString& filePath);
     void showError(const QString& header, const QString& text);
@@ -51,7 +51,9 @@ private:
 
     void switchFile(int offset);
 
-    void setActionsInEditorMenu(Editor* editor);
+    void updateEditMenuActions(Editor* editor);
+
+    void updateMainWindowTitle() const;
 
 private slots:
     void onFileOpen();

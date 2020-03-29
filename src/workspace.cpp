@@ -14,11 +14,11 @@
 
 
 Workspace::Workspace(MainWindow* mainWindow):
-    m_widget(new QStackedWidget(mainWindow)),
+    widget_(new QStackedWidget(mainWindow)),
     mainWindow_(mainWindow),
-    m_currentEditor(nullptr)
+    currentEditor_(nullptr)
 {
-    mainWindow->setWorkspace(m_widget);
+    mainWindow->setWorkspace(widget_);
 
     new OpenFileList(mainWindow_, this);
 
@@ -31,7 +31,7 @@ Workspace::Workspace(MainWindow* mainWindow):
 }
 
 Workspace::~Workspace() {
-    foreach(Editor* editor, m_editors) {
+    foreach(Editor* editor, editors_) {
         delete editor;
     }
 }
@@ -80,7 +80,7 @@ void Workspace::createEmptyNotSavedFile(const QString& path) {
 }
 
 const QList<Editor*>& Workspace::editors() const {
-    return m_editors;
+    return editors_;
 }
 
 void Workspace::focusCurrentEditor() const {
@@ -90,8 +90,8 @@ void Workspace::focusCurrentEditor() const {
 }
 
 Editor* Workspace::currentEditor() const {
-    if ( ! m_editors.isEmpty()) {
-        return m_editors.first();
+    if ( ! editors_.isEmpty()) {
+        return editors_.first();
     } else {
         return nullptr;
     }
@@ -122,8 +122,8 @@ void Workspace::showError(const QString& title, const QString& text) {
 }
 
 void Workspace::addEditor(Editor* editor) {
-    m_editors.append(editor);
-    m_widget->addWidget(&editor->qutepart());
+    editors_.append(editor);
+    widget_->addWidget(&editor->qutepart());
 
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             mainWindow_, &QWidget::setWindowModified);
@@ -139,44 +139,62 @@ void Workspace::removeEditor(Editor* editor) {
     disconnect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             mainWindow_, &QWidget::setWindowModified);
 
-    m_widget->removeWidget(&editor->qutepart());
-    m_editors.removeOne(editor);
+    widget_->removeWidget(&editor->qutepart());
+    editors_.removeOne(editor);
 }
 
 void Workspace::setCurrentEditor(Editor* editor) {
-    if (editor == m_currentEditor) {
+    if (editor == currentEditor_) {
         return;
     }
 
-    mainWindow_->setWindowTitle(QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
-    mainWindow_->setWindowModified(editor->qutepart().document()->isModified());
+    widget_->setCurrentWidget(&(editor->qutepart()));
 
-    m_widget->setCurrentWidget(&(editor->qutepart()));
+    updateEditMenuActions(editor);
 
-    setActionsInEditorMenu(editor);
+    currentEditor_ = editor;
 
-    m_currentEditor = editor;
+    updateMainWindowTitle();
 
-    emit currentEditorChanged(m_currentEditor);
+    emit currentEditorChanged(currentEditor_);
 }
 
-void Workspace::setActionsInEditorMenu(Editor* editor) {
+void Workspace::updateEditMenuActions(Editor* editor) {
+    qDebug() << "set editor" << editor;
     QMenu* editorMenu = mainWindow_->menuBar()->editorMenu();
     editorMenu->clear();
-    editorMenu->addAction(editor->qutepart().scrollUpAction());
-    editorMenu->addAction(editor->qutepart().scrollDownAction());
+
+    if (editor != nullptr) {
+        editorMenu->addAction(editor->qutepart().scrollUpAction());
+        editorMenu->addAction(editor->qutepart().scrollDownAction());
+    }
+}
+
+void Workspace::updateMainWindowTitle() const {
+    if (currentEditor_ != nullptr) {
+        mainWindow_->setWindowTitle(
+            QString("%1[*]").arg(QFileInfo(currentEditor_->filePath()).fileName()));
+
+        mainWindow_->setWindowModified(
+            currentEditor_->qutepart().document()->isModified());
+    } else {
+        /*
+        mainWindow_->setWindowTitle(core().project().path().path());
+        mainWindow_->setModified(false);
+        */
+    }
 }
 
 void Workspace::switchFile(int offset) {
-    int index = m_editors.indexOf(m_currentEditor);
+    int index = editors_.indexOf(currentEditor_);
     index += offset;
-    if (index >= m_editors.length()) {
-        index -= m_editors.length();
+    if (index >= editors_.length()) {
+        index -= editors_.length();
     } else if (index < 0) {
-        index += m_editors.length();
+        index += editors_.length();
     }
 
-    setCurrentEditor(m_editors[index]);
+    setCurrentEditor(editors_[index]);
 }
 
 void Workspace::onFileOpen() {
@@ -191,16 +209,16 @@ void Workspace::onFileOpen() {
 }
 
 void Workspace::onFileSave() {
-    if (m_currentEditor == nullptr) {
+    if (currentEditor_ == nullptr) {
         return;
     }
 
-    m_currentEditor->saveFile();
+    currentEditor_->saveFile();
 }
 
 void Workspace::onFileClose() {
-    if (m_currentEditor != nullptr) {
-        Editor* editor = m_currentEditor;
+    if (currentEditor_ != nullptr) {
+        Editor* editor = currentEditor_;
         switchFile(-1);
         removeEditor(editor);
         delete editor;

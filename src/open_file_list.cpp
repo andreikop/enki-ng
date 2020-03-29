@@ -158,8 +158,10 @@ private slots:
             return; // avoid infinite loop of signals and actions
         }
 
-        Editor* editor = model_->getEditorByIndex(current);
-        workspace_->setCurrentEditor(editor);
+        if (current.isValid()) {
+            Editor* editor = model_->getEditorByIndex(current);
+            workspace_->setCurrentEditor(editor);
+        }
     }
 
 private:

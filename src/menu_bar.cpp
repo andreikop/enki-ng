@@ -34,7 +34,7 @@ QMenu* MenuBar::viewMenu() const {
 }
 
 QAction* MenuBar::fileOpenAction() const {
-    return fileCloseAction_;
+    return fileOpenAction_;
 }
 
 QAction* MenuBar::fileSaveAction() const {
