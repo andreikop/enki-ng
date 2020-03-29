@@ -22,12 +22,12 @@ Workspace::Workspace(MainWindow* mainWindow):
 
     new OpenFileList(mainWindow_, this);
 
-    connect(mainWindow->menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
-    connect(mainWindow->menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
-    connect(mainWindow->menuBar()->fileCloseAction, &QAction::triggered, this, &Workspace::onFileClose);
+    connect(mainWindow->menuBar()->fileOpenAction(), &QAction::triggered, this, &Workspace::onFileOpen);
+    connect(mainWindow->menuBar()->fileSaveAction(), &QAction::triggered, this, &Workspace::onFileSave);
+    connect(mainWindow->menuBar()->fileCloseAction(), &QAction::triggered, this, &Workspace::onFileClose);
 
-    connect(mainWindow->menuBar()->viewPrevFileAction, &QAction::triggered, this, &Workspace::onPrevFile);
-    connect(mainWindow->menuBar()->viewNextFileAction, &QAction::triggered, this, &Workspace::onNextFile);
+    connect(mainWindow->menuBar()->viewPrevFileAction(), &QAction::triggered, this, &Workspace::onPrevFile);
+    connect(mainWindow->menuBar()->viewNextFileAction(), &QAction::triggered, this, &Workspace::onNextFile);
 }
 
 Workspace::~Workspace() {

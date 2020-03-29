@@ -88,4 +88,5 @@ private:
 
 private slots:
     void onDirectoryLoaded(const QString& directory);
+    void onSwitchDirectoryAction();
 };

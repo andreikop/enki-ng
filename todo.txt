@@ -2,6 +2,7 @@ Work critical
 
 Open directory functionality
 
+Show current directory on window title if don't have any files
 Application icon
 Include file name to path to make sure the names are unique
 Ignore dirs and files from gitignore

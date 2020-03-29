@@ -36,6 +36,8 @@ FileTree::FileTree(QDockWidget* parent):
 
     setModel(&core().project().filteredFsModel());
     setRootIndex(core().project().filteredFsModelRootIndex());
+    connect(&core().project(), &Project::pathChanged,
+        [this] {this->setRootIndex(core().project().filteredFsModelRootIndex());});
 
     connect(this, &FileTree::activated, this, &FileTree::onActivated);
 

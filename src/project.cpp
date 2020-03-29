@@ -1,7 +1,10 @@
+#include <QAction>
 #include <QDebug>
+#include <QFileDialog>
 
 #include "core.h"
 #include "option.h"
+#include "main_window.h"
 
 #include "project.h"
 
@@ -98,6 +101,10 @@ Project::Project():
     filteredFsModel_.setIgnoredFilePatterns(ignoredFilePatterns.value());
     filteredFsModel_.setIgnoredDirectoryPatterns(ignoredDirectoryPatterns.value());
 
+    connect(
+        core().mainWindow().menuBar()->switchDirectoryAction(), &QAction::triggered,
+        this, &Project::onSwitchDirectoryAction);
+
     connect(&fsModel_, &QFileSystemModel::directoryLoaded, this, &Project::onDirectoryLoaded);
 
     setPath(QDir::current());
@@ -105,8 +112,12 @@ Project::Project():
 
 void Project::setPath(const QDir& path) {
     path_ = path;
+
+    QDir::setCurrent(path.path());
+
     fsModel_.setRootPath(path.path());
     filteredFsModel_.setCanonicalRootPath(path.canonicalPath());
+
     fileListCache_.reset();
     countOfLoadedDirectories_ = 0;
     emit(pathChanged(path));
@@ -167,4 +178,15 @@ void Project::onDirectoryLoaded(const QString& directory ) {
 
     // TODO delay signal until finished loading children?
     emit(fileListUpdated());
+}
+
+void Project::onSwitchDirectoryAction() {
+    QString path = QFileDialog::getExistingDirectory(
+        &core().mainWindow(),
+        "Switch current directory",
+        path_.path());
+
+    if ( ! path.isNull()) {
+        setPath(path);
+    }
 }
