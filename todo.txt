@@ -1,6 +1,8 @@
 Work critical
 
 Advanced edit operations
-Show current directory on window title if don't have any files
+
+Other
+
 Include file name to path to make sure the names are unique
 Ignore dirs and files from gitignore

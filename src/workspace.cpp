@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
-#include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextCodec>
@@ -21,6 +20,8 @@ Workspace::Workspace(MainWindow* mainWindow):
     mainWindow->setWorkspace(widget_);
 
     new OpenFileList(mainWindow_, this);
+
+    connect(this, &Workspace::currentEditorChanged, mainWindow_, &MainWindow::updateTitle);
 
     connect(mainWindow->menuBar()->fileOpenAction(), &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow->menuBar()->fileSaveAction(), &QAction::triggered, this, &Workspace::onFileSave);
@@ -90,11 +91,7 @@ void Workspace::focusCurrentEditor() const {
 }
 
 Editor* Workspace::currentEditor() const {
-    if ( ! editors_.isEmpty()) {
-        return editors_.first();
-    } else {
-        return nullptr;
-    }
+    return currentEditor_;
 }
 
 QString Workspace::readFile(const QString& filePath) {
@@ -148,40 +145,24 @@ void Workspace::setCurrentEditor(Editor* editor) {
         return;
     }
 
-    widget_->setCurrentWidget(&(editor->qutepart()));
+    if (editor != nullptr) {
+        widget_->setCurrentWidget(&(editor->qutepart()));
+    }
 
     updateEditMenuActions(editor);
 
     currentEditor_ = editor;
 
-    updateMainWindowTitle();
-
     emit currentEditorChanged(currentEditor_);
 }
 
 void Workspace::updateEditMenuActions(Editor* editor) {
-    qDebug() << "set editor" << editor;
     QMenu* editorMenu = mainWindow_->menuBar()->editorMenu();
     editorMenu->clear();
 
     if (editor != nullptr) {
         editorMenu->addAction(editor->qutepart().scrollUpAction());
         editorMenu->addAction(editor->qutepart().scrollDownAction());
-    }
-}
-
-void Workspace::updateMainWindowTitle() const {
-    if (currentEditor_ != nullptr) {
-        mainWindow_->setWindowTitle(
-            QString("%1[*]").arg(QFileInfo(currentEditor_->filePath()).fileName()));
-
-        mainWindow_->setWindowModified(
-            currentEditor_->qutepart().document()->isModified());
-    } else {
-        /*
-        mainWindow_->setWindowTitle(core().project().path().path());
-        mainWindow_->setModified(false);
-        */
     }
 }
 
@@ -219,7 +200,13 @@ void Workspace::onFileSave() {
 void Workspace::onFileClose() {
     if (currentEditor_ != nullptr) {
         Editor* editor = currentEditor_;
-        switchFile(-1);
+
+        if (editors_.length() > 1) {
+            switchFile(-1);
+        } else {
+            setCurrentEditor(nullptr);
+        }
+
         removeEditor(editor);
         delete editor;
     }

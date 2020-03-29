@@ -108,6 +108,8 @@ Project::Project():
     connect(&fsModel_, &QFileSystemModel::directoryLoaded, this, &Project::onDirectoryLoaded);
 
     setPath(QDir::current());
+
+    connect(this, &Project::pathChanged, &core().mainWindow(), &MainWindow::updateTitle);
 }
 
 void Project::setPath(const QDir& path) {

@@ -53,8 +53,6 @@ private:
 
     void updateEditMenuActions(Editor* editor);
 
-    void updateMainWindowTitle() const;
-
 private slots:
     void onFileOpen();
     void onFileSave();

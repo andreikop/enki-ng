@@ -14,6 +14,9 @@ public:
     void setWorkspace(QWidget* workspace);
     void setSearchWidget(QWidget* searchWidget);
 
+public slots:
+    void updateTitle();
+
 private:
     QVBoxLayout* centralLayout_;
 };

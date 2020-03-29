@@ -1,4 +1,10 @@
 #include <QFont>
+#include <QFileInfo>
+
+#include "core.h"
+#include "editor.h"
+#include "project.h"
+#include "workspace.h"
 
 #include "main_window.h"
 
@@ -29,4 +35,18 @@ void MainWindow::setWorkspace(QWidget* workspace) {
 
 void MainWindow::setSearchWidget(QWidget* searchWidget) {
     centralLayout_->addWidget(searchWidget);
+}
+
+void MainWindow::updateTitle() {
+    Editor* editor = core().workspace().currentEditor();
+
+    if (editor != nullptr) {
+        setWindowTitle(
+            QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
+
+        setWindowModified(editor->qutepart().document()->isModified());
+    } else {
+        setWindowTitle(core().project().path().path());
+        setWindowModified(false);
+    }
 }
