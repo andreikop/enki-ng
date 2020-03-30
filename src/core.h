@@ -12,6 +12,9 @@ public:
     virtual Project& project() = 0;
     virtual Settings& settings() = 0;
 
+    virtual void init() = 0;
+    virtual void cleanup() = 0;
+
 protected:
     virtual ~Core() = default;
 };

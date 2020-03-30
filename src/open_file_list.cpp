@@ -1,3 +1,4 @@
+#include <QDir>
 #include <QListView>
 #include <QFileInfo>
 #include <QDebug>
@@ -15,6 +16,7 @@ namespace {
 }
 
 class OpenedFileModel: public QAbstractItemModel {
+    Q_OBJECT
     /* Model which shows the list of opened files
      * in the tree view (OpenFileList)
      * It switches current file, does file sorting
@@ -25,6 +27,7 @@ public:
         editors_(workspace->editors()),
         transparentIcon_(transparentIcon())
     {
+        setObjectName("OpenedFileModel"); // for the tests
         connect(workspace, &Workspace::editorOpened,
             this, &OpenedFileModel::onEditorOpened);
         connect(workspace, &Workspace::editorClosed,
@@ -52,6 +55,45 @@ public:
             return ! editors_.isEmpty();
     }
 
+    static void findUniqParts(QString& a, QString& b) {
+        QDir aPath = QFileInfo(a).dir();
+        QDir bPath = QFileInfo(b).dir();
+
+        a = QFileInfo(a).fileName();
+        b = QFileInfo(b).fileName();
+
+        while (a == b) {
+            QString aDirName = aPath.dirName();
+            QString bDirName = bPath.dirName();
+            a = QDir(aDirName).filePath(a);
+            b = QDir(bDirName).filePath(b);
+            aPath.cdUp();
+            bPath.cdUp();
+        }
+    }
+
+    void rebuildUniqPathList() {
+        uniqPathList_.clear();
+        uniqPathList_.reserve(editors_.length());
+        for(int index = 0; index < editors_.length(); index++) {
+            QString path = editors_[index]->filePath();
+            QString part = QFileInfo(path).fileName();
+
+            int existingIndex = uniqPathList_.indexOf(part);
+
+            if (existingIndex == -1) {
+                uniqPathList_.append(part);
+            } else {
+                QString anotherPath = editors_[existingIndex]->filePath();
+
+                findUniqParts(path, anotherPath);
+                uniqPathList_.append(path);
+                uniqPathList_[existingIndex] = anotherPath;
+            }
+        }
+
+    }
+
     QVariant data(const QModelIndex& index, int role) const {
         if ( ! index.isValid())
             return QVariant();
@@ -67,7 +109,7 @@ public:
                     return transparentIcon_;
                 }
             case Qt::DisplayRole:
-                return QFileInfo(editor->filePath()).fileName();
+                return uniqPathList_[index.row()];
             case Qt::EditRole:
             case Qt::ToolTipRole:
                 return editor->filePath();
@@ -104,12 +146,14 @@ private slots:
         int index = editors_.indexOf(editor);
         beginInsertRows(QModelIndex(), index, index);
         endInsertRows();
+        rebuildUniqPathList();
     }
 
     void onEditorClosed(Editor* editor) {
         int index = editors_.indexOf(editor);
         beginRemoveRows(QModelIndex(), index, index);
         endRemoveRows();
+        rebuildUniqPathList();
     }
 
     void onEditorModifiedChanged(Editor* editor, bool /*modified*/) {
@@ -120,10 +164,13 @@ private slots:
 
 private:
     const QList<Editor*>& editors_;
+    QStringList uniqPathList_;
     QIcon transparentIcon_;
 };
 
 class OpenFileListView: public QListView {
+    Q_OBJECT
+
 public:
     OpenFileListView(QWidget* parent, Workspace* workspace):
         QListView(parent),
@@ -182,3 +229,5 @@ OpenFileList::OpenFileList(QMainWindow *mainWindow, Workspace *workspace):
     setWidget(treeView);
     mainWindow->addDockWidget(Qt::LeftDockWidgetArea, this);
 }
+
+#include "open_file_list.moc"

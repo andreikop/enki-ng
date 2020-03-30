@@ -4,5 +4,5 @@ Advanced edit operations
 
 Other
 
-Include file name to path to make sure the names are unique
+Autocompletable directory change command
 Ignore dirs and files from gitignore

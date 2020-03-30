@@ -113,6 +113,8 @@ int main(int argc, char** argv) {
         qInstallMessageHandler(logHandler);
     }
 
+    core().init();
+
     for (const auto& f: cmdLine.existingFiles) {
         core().workspace().openFile(f.path, f.line);
     }

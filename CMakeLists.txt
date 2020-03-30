@@ -14,6 +14,7 @@ set(QUTEPART_MAX_REQUIRED_VERSION 2.0.0)  # but not this version
 
 
 if(NOT QUTEPART_SRC_DIR STREQUAL "")
+    set(DISABLE_QUTEPART_TESTS ON BOOL)
     add_subdirectory(${QUTEPART_SRC_DIR} qutepart EXCLUDE_FROM_ALL)
     if (NOT DEFINED QUTEPART_VERSION)
         message(FATAL_ERROR
@@ -55,13 +56,13 @@ set(CMAKE_CXX_STANDARD 17)
 # Find the QtWidgets library
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(Qt5Test CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
 set(enki_SRCS
     icons/icons.qrc
     src/core.cpp
     src/editor.cpp
-    src/enki.cpp
     src/open_file_list.cpp
     src/main_window.cpp
     src/workspace.cpp
@@ -85,7 +86,7 @@ QT5_WRAP_UI(enki_FORMS_HEADERS ${enki_FORMS})
 include_directories(src)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(enki-ng ${enki_SRCS} ${enki_FORMS_HEADERS})
+add_executable(enki-ng src/enki.cpp ${enki_SRCS} ${enki_FORMS_HEADERS})
 
 target_link_libraries(enki-ng Qt5::Core Qt5::Widgets qutepart)
 target_compile_options(enki-ng PRIVATE -Wall -Wextra -pedantic -Werror)
@@ -110,3 +111,21 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
         FILES icons/logo/enki.svg
         DESTINATION /usr/share/icons/hicolor/scalable/apps)
 endif()
+
+
+#
+# Tests
+#
+enable_testing()
+
+function(enki_test name)
+    set(full_name test_${name})
+    add_executable(${full_name} tests/${full_name}.cpp ${enki_SRCS})
+    target_link_libraries(${full_name} Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+    add_test(
+        NAME ${name}
+        COMMAND ${full_name}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+endfunction()
+
+enki_test(file_operations)

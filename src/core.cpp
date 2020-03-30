@@ -16,6 +16,26 @@
 
 class CoreImplementation: public Core {
 public:
+    void init() override {
+        settings_ = std::make_unique<Settings>();
+        mainWindow_ = std::make_unique<MainWindow>();
+        workspace_ = std::make_unique<Workspace>(mainWindow_.get());
+        project_ = std::make_unique<Project>();
+
+        modules_.append(new SearchController());
+        modules_.append(new FileBrowser());
+        modules_.append(new Locator());
+    }
+
+    void cleanup() override {
+        foreach(Module* module, modules_) {
+            delete module;
+        }
+        project_.reset();
+        workspace_.reset();
+        mainWindow_.reset();
+        settings_.reset();
+    }
 
     MainWindow& mainWindow() override {
         return *mainWindow_;
@@ -38,20 +58,7 @@ public:
 private:
 
     ~CoreImplementation() {
-        foreach(Module* module, modules_) {
-            delete module;
-        }
-    }
-
-    void init() {
-        settings_ = std::make_unique<Settings>();
-        mainWindow_ = std::make_unique<MainWindow>();
-        workspace_ = std::make_unique<Workspace>(mainWindow_.get());
-        project_ = std::make_unique<Project>();
-
-        modules_.append(new SearchController());
-        modules_.append(new FileBrowser());
-        modules_.append(new Locator());
+        cleanup();
     }
 
     std::unique_ptr<Settings> settings_;
@@ -70,8 +77,6 @@ Core& core() {
     // NOTE not thread safe
     if (CoreImplementation::instance_ == nullptr) {
         CoreImplementation::instance_ = new CoreImplementation();
-
-        CoreImplementation::instance_->init();
     }
 
     return *CoreImplementation::instance_;
