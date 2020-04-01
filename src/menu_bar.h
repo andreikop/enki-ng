@@ -20,8 +20,9 @@ public:
     QAction* viewPrevFileAction() const;
     QAction* viewNextFileAction() const;
 
+    QMenu* navigationMenu() const;
     QMenu* searchMenu() const;
-    QMenu* goToMenu() const;
+    QMenu* bookmarksMenu() const;
     QMenu* editorMenu() const;
 
 private:
@@ -38,8 +39,9 @@ private:
     QAction* viewNextFileAction_;
 
     QAction* fileQuitAction_;
+    QMenu* navigationMenu_;
     QMenu* searchMenu_;
-    QMenu* goToMenu_;
+    QMenu* bookmarksMenu_;
     QMenu* editorMenu_;
 
     void initFileMenu();

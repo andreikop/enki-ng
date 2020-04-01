@@ -159,10 +159,25 @@ void Workspace::setCurrentEditor(Editor* editor) {
 void Workspace::updateEditMenuActions(Editor* editor) {
     QMenu* editorMenu = mainWindow_->menuBar()->editorMenu();
     editorMenu->clear();
+    QMenu* bookmarksMenu = mainWindow_->menuBar()->bookmarksMenu();
+    bookmarksMenu->clear();
 
     if (editor != nullptr) {
-        editorMenu->addAction(editor->qutepart().scrollUpAction());
-        editorMenu->addAction(editor->qutepart().scrollDownAction());
+        Qutepart::Qutepart& qpart = editor->qutepart();
+
+        QMenu* scrollingMenu = editorMenu->addMenu("Scrolling");
+        scrollingMenu->addAction(qpart.scrollUpAction());
+        scrollingMenu->addAction(qpart.scrollDownAction());
+
+        editorMenu->addAction(qpart.invokeCompletionAction());
+
+        QMenu* indentMenu = editorMenu->addMenu("Indentation");
+        indentMenu->addAction(qpart.increaseIndentAction());
+        indentMenu->addAction(qpart.decreaseIndentAction());
+
+        bookmarksMenu->addAction(qpart.toggleBookmarkAction());
+        bookmarksMenu->addAction(qpart.prevBookmarkAction());
+        bookmarksMenu->addAction(qpart.nextBookmarkAction());
     }
 }
 

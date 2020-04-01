@@ -21,8 +21,6 @@ MenuBar::MenuBar(QMainWindow* parent):
     initNavigationMenu();
 
     editorMenu_ = addMenu("Editor");
-
-    goToMenu_ = addMenu("Go To");
 }
 
 QMenu* MenuBar::fileMenu() const {
@@ -61,8 +59,12 @@ QMenu* MenuBar::searchMenu() const {
     return searchMenu_;
 }
 
-QMenu* MenuBar::goToMenu() const {
-    return goToMenu_;
+QMenu* MenuBar::navigationMenu() const {
+    return navigationMenu_;
+}
+
+QMenu* MenuBar::bookmarksMenu() const {
+    return bookmarksMenu_;
 }
 
 QMenu* MenuBar::editorMenu() const {
@@ -99,6 +101,7 @@ void MenuBar::initViewMenu() {
 }
 
 void MenuBar::initNavigationMenu() {
-    QMenu* navigationMenu = addMenu("Navigation");
-    searchMenu_ = navigationMenu->addMenu("Search and Replace");
+    navigationMenu_ = addMenu("Navigation");
+    searchMenu_ = navigationMenu_->addMenu("Search and Replace");
+    bookmarksMenu_ = navigationMenu_->addMenu("Boomarks");
 }

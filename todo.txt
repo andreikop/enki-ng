@@ -10,3 +10,5 @@ File Browser: switch directory with right click
 View: Zoom with Ctrl+ +-=
 Autocompletable directory change command
 Ignore dirs and files from gitignore
+:line-number in Locator
+Trim too many newlines at end of file
