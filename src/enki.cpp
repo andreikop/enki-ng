@@ -91,6 +91,7 @@ void logHandler(QtMsgType type, const QMessageLogContext &context, const QString
 
 int main(int argc, char** argv) {
     Q_INIT_RESOURCE(qutepart_syntax_files);
+    Q_INIT_RESOURCE(icons);
 
     QApplication app(argc, argv);
     app.setApplicationName("Enki Editor");

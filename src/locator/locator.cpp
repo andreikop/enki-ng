@@ -5,7 +5,7 @@
 #include "locator.h"
 
 Locator::Locator():
-    showAction_(QIcon::fromTheme("go-jump"), "Go to file...", this)
+    showAction_(QIcon::fromTheme("go-jump"), "Go to file in project...", this)
 {
     connect(&showAction_, &QAction::triggered, this, &Locator::onTriggered);
     showAction_.setShortcut(QKeySequence("Ctrl+L"));

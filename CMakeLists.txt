@@ -59,26 +59,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5Test CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
-set(enki_SRCS
-    icons/icons.qrc
-    src/core.cpp
-    src/editor.cpp
-    src/open_file_list.cpp
-    src/main_window.cpp
-    src/workspace.cpp
-    src/menu_bar.cpp
-    src/project.cpp
-    src/settings.cpp
-    src/locator/locator.cpp
-    src/locator/locator_dialog.cpp
-    src/locator/locator_model.cpp
-    src/locator/open_file_command.cpp
-    src/search_replace/search_controller.cpp
-    src/search_replace/search_widget.cpp
-    src/search_replace/search_pattern.cpp
-    src/file_browser/file_browser.cpp
-    src/file_browser/file_tree.cpp
-    )
+file(GLOB_RECURSE ENKI_SRCS src/*.cpp)
 
 SET(enki_FORMS src/search-replace/SearchWidget.ui)
 QT5_WRAP_UI(enki_FORMS_HEADERS ${enki_FORMS})
@@ -86,14 +67,18 @@ QT5_WRAP_UI(enki_FORMS_HEADERS ${enki_FORMS})
 include_directories(src)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(enki-ng src/enki.cpp ${enki_SRCS} ${enki_FORMS_HEADERS})
+# Enki library is used by the binary and the tests
+add_library(enki STATIC ${ENKI_SRCS} ${enki_FORMS_HEADERS} icons/icons.qrc)
+target_link_libraries(enki Qt5::Core Qt5::Widgets qutepart)
+target_compile_options(enki PRIVATE -Wall -Wextra -pedantic -Werror)
 
-target_link_libraries(enki-ng Qt5::Core Qt5::Widgets qutepart)
-target_compile_options(enki-ng PRIVATE -Wall -Wextra -pedantic -Werror)
+# The executable
+add_executable(enki-ng src/enki.cpp)
+target_link_libraries(enki-ng enki)
 
 install(TARGETS enki-ng DESTINATION bin)
 
-
+# Install desktop files on Linux
 if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
     install(
         FILES install/enki.desktop
@@ -120,7 +105,8 @@ enable_testing()
 
 function(enki_test name)
     set(full_name test_${name})
-    add_executable(${full_name} tests/${full_name}.cpp ${enki_SRCS})
+    add_executable(${full_name} tests/${full_name}.cpp )
+    target_link_libraries(${full_name} enki)
     target_link_libraries(${full_name} Qt5::Test Qt5::Core Qt5::Widgets qutepart)
     add_test(
         NAME ${name}
