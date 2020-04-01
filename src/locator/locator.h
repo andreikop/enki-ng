@@ -6,6 +6,7 @@
 
 
 class Locator: public Module {
+    Q_OBJECT
 public:
     Locator();
 

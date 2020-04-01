@@ -9,6 +9,7 @@
 
 
 class FileBrowserDock: public QDockWidget {
+    Q_OBJECT
 public:
     FileBrowserDock(QMainWindow* mainWindow);
 };

@@ -128,4 +128,5 @@ function(enki_test name)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/test-project)
 endfunction()
 
+enki_test(core)
 enki_test(file_operations)

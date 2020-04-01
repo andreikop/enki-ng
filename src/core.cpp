@@ -1,3 +1,5 @@
+#include <list>
+
 #include <QDebug>
 
 #include "workspace.h"
@@ -22,15 +24,14 @@ public:
         workspace_ = std::make_unique<Workspace>(mainWindow_.get());
         project_ = std::make_unique<Project>();
 
-        modules_.append(new SearchController());
-        modules_.append(new FileBrowser());
-        modules_.append(new Locator());
+        modules_.push_back(std::make_unique<SearchController>());
+        modules_.push_back(std::make_unique<FileBrowser>());
+        modules_.push_back(std::make_unique<Locator>());
     }
 
     void cleanup() override {
-        foreach(Module* module, modules_) {
-            delete module;
-        }
+        modules_.clear();
+
         project_.reset();
         workspace_.reset();
         mainWindow_.reset();
@@ -68,7 +69,7 @@ private:
 
     static CoreImplementation* instance_;
 
-    QVector<Module*> modules_;
+    std::list<std::unique_ptr<Module>> modules_;
 };
 
 CoreImplementation* CoreImplementation::instance_ = nullptr;
