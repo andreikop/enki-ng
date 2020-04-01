@@ -60,6 +60,7 @@ find_package(Qt5Test CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
 file(GLOB_RECURSE ENKI_SRCS src/*.cpp)
+list(REMOVE_ITEM ENKI_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/enki.cpp)  # this item is not included to the library, only to the binary
 
 SET(enki_FORMS src/search-replace/SearchWidget.ui)
 QT5_WRAP_UI(enki_FORMS_HEADERS ${enki_FORMS})
