@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QIcon>
+#include <QTimer>
 
 
 #include "qutepart/qutepart.h"
@@ -116,15 +117,19 @@ int main(int argc, char** argv) {
 
     core().init();
 
-    for (const auto& f: cmdLine.existingFiles) {
-        core().workspace().openFile(f.path, f.line);
-    }
-
-    for (const auto& path: cmdLine.notExistingFiles) {
-        core().workspace().createEmptyNotSavedFile(path);
-    }
-
     core().mainWindow().show();
+
+    // Files must be opened After app.exec()
+    // otherwise application style is not loaded and the editor can't set it's font properly
+    QTimer::singleShot(0, [cmdLine] {
+        for (const auto& f: cmdLine.existingFiles) {
+            core().workspace().openFile(f.path, f.line);
+        }
+
+        for (const auto& path: cmdLine.notExistingFiles) {
+            core().workspace().createEmptyNotSavedFile(path);
+        }
+    });
 
     return app.exec();
 }
