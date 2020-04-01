@@ -125,7 +125,7 @@ function(enki_test name)
     add_test(
         NAME ${name}
         COMMAND ${full_name}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/test-project)
 endfunction()
 
 enki_test(file_operations)

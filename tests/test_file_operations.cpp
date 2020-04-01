@@ -14,8 +14,6 @@ class Test: public QObject {
 private slots:
     void init() {
         core().init();
-        // assume the tests are executed from enki-ng/build directory
-        core().project().setPath(QDir("test-project"));
     }
 
     void cleanup() {

@@ -1,8 +1,12 @@
 Work critical
 
+Line move and delete
 Advanced edit operations
 
 Other
 
+File Browser: single click expand and open
+File Browser: switch directory with right click
+View: Zoom with Ctrl+ +-=
 Autocompletable directory change command
 Ignore dirs and files from gitignore
