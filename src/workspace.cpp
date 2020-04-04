@@ -171,6 +171,10 @@ void Workspace::updateEditMenuActions(Editor* editor) {
 
         editorMenu->addAction(qpart.invokeCompletionAction());
 
+        QMenu* editLinesMenu = editorMenu->addMenu("Lines");
+        editLinesMenu->addAction(qpart.moveLineUpAction());
+        editLinesMenu->addAction(qpart.moveLineDownAction());
+
         QMenu* indentMenu = editorMenu->addMenu("Indentation");
         indentMenu->addAction(qpart.increaseIndentAction());
         indentMenu->addAction(qpart.decreaseIndentAction());
