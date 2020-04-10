@@ -170,6 +170,7 @@ void Workspace::updateEditMenuActions(Editor* editor) {
         scrollingMenu->addAction(qpart.scrollDownAction());
 
         editorMenu->addAction(qpart.invokeCompletionAction());
+        editorMenu->addAction(qpart.duplicateSelectionAction());
 
         QMenu* editLinesMenu = editorMenu->addMenu("Lines");
         editLinesMenu->addAction(qpart.moveLineUpAction());
