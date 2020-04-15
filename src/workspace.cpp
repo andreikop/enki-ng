@@ -173,6 +173,7 @@ void Workspace::updateEditMenuActions(Editor* editor) {
         editorMenu->addAction(qpart.duplicateSelectionAction());
 
         QMenu* editLinesMenu = editorMenu->addMenu("Lines");
+        editLinesMenu->addAction(qpart.deleteLineAction());
         editLinesMenu->addAction(qpart.moveLineUpAction());
         editLinesMenu->addAction(qpart.moveLineDownAction());
         editLinesMenu->addSeparator();

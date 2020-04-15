@@ -1,6 +1,5 @@
 Work critical
 
-Line delete
 Advanced edit operations
 
 Other
