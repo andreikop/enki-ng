@@ -5,6 +5,7 @@
 #include "core.h"
 #include "option.h"
 #include "main_window.h"
+#include "subprocess.h"
 
 #include "project.h"
 
@@ -32,23 +33,59 @@ void FilteredFsModel::setIgnoredDirectoryPatterns(const QStringList& patterns) {
     ignoredDirectoryWildcards_ = fromStringList(patterns);
 }
 
-void FilteredFsModel::setCanonicalRootPath(const QString& path) {
-    canonicalRootPath_ = path;
+void FilteredFsModel::setGitIgnoredFileList(const QStringList& fileList) {
+    gitIgnoredDirs_.clear();
+    gitIgnoredFiles_.clear();
+
+    for(const QString& filePath: fileList) {
+        if (filePath.endsWith("/")) {  // TODO on Windows?
+            gitIgnoredDirs_ << filePath.left(filePath.length() - 1);  // add w/o /
+        } else {
+            gitIgnoredFiles_ << filePath;
+        }
+    }
+}
+
+void FilteredFsModel::setRootPath(const QString& path) {
+    rootDir_ = QDir(path);
 }
 
 bool FilteredFsModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const {
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
     QString path = sourceModel()->data(sourceIndex, QFileSystemModel::FilePathRole).toString();
     QFileInfo fInfo = QFileInfo(path);
+
     if (fInfo.isDir()) {
         // It is important not to ignore parent directories.
-        if (canonicalRootPath_.startsWith(fInfo.canonicalFilePath())) {
+        if (rootDir_.canonicalPath().startsWith(fInfo.canonicalFilePath())) {
             return true;  // always allow parents (higher than project root)
         }
 
-        return ! wildcardListMatches(ignoredDirectoryWildcards_, fInfo);
+        if (wildcardListMatches(ignoredDirectoryWildcards_, fInfo)) {
+            // Ignored by Enki settings
+            return false;
+        }
+
+        QString relativePath = rootDir_.relativeFilePath(path);
+        if (gitIgnoredDirs_.contains(relativePath)) {
+            // Ignored by Git settings
+            return false;
+        }
+
+        return true;
     } else {
-        return ! wildcardListMatches(ignoredFileWildcards_, fInfo);
+        if (wildcardListMatches(ignoredFileWildcards_, fInfo)) {
+            // Ignored by Enki settings
+            return false;
+        }
+
+        QString relativePath = rootDir_.relativeFilePath(path);
+        if (gitIgnoredFiles_.contains(relativePath)) {
+            // Ignored by Git settings
+            return false;
+        }
+
+        return true;
     }
 }
 
@@ -96,7 +133,7 @@ Project::Project():
     fsModel_.setFilter(QDir::AllDirs | QDir::AllEntries | QDir::CaseSensitive | QDir::NoDotAndDotDot);
 
     // create proxy model
-    filteredFsModel_.setCanonicalRootPath(path_.canonicalPath());
+    filteredFsModel_.setRootPath(path_.canonicalPath());
     filteredFsModel_.setSourceModel(&fsModel_);
     filteredFsModel_.setIgnoredFilePatterns(ignoredFilePatterns.value());
     filteredFsModel_.setIgnoredDirectoryPatterns(ignoredDirectoryPatterns.value());
@@ -117,8 +154,20 @@ void Project::setPath(const QDir& path) {
 
     QDir::setCurrent(path.path());
 
+
     fsModel_.setRootPath(path.path());
-    filteredFsModel_.setCanonicalRootPath(path.canonicalPath());
+    filteredFsModel_.setRootPath(path.canonicalPath());
+
+    // FIXME blocking call!!!!
+    SubProcessResult gitRes = runSubProcess(
+            "git", {"ls-files", "--others", "--ignored", "--exclude-standard", "--directory"});
+    if (gitRes.exitCode == 0) {
+        // TODO use cross platform EOL?
+        QStringList fileList = gitRes.stdOut.split("\n", QString::SkipEmptyParts);
+        filteredFsModel_.setGitIgnoredFileList(fileList);
+    } else {
+        filteredFsModel_.setGitIgnoredFileList({});
+    }
 
     fileListCache_.reset();
     countOfLoadedDirectories_ = 0;

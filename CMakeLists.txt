@@ -67,6 +67,7 @@ SET(enki_FORMS src/search-replace/SearchWidget.ui)
 QT5_WRAP_UI(enki_FORMS_HEADERS ${enki_FORMS})
 
 include_directories(src)
+include_directories(src/lib)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Enki library is used by the binary and the tests

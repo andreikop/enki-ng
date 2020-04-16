@@ -26,7 +26,8 @@ public:
 
     void setIgnoredFilePatterns(const QStringList& patterns);
     void setIgnoredDirectoryPatterns(const QStringList& patterns);
-    void setCanonicalRootPath(const QString& path);
+    void setGitIgnoredFileList(const QStringList& fileList);
+    void setRootPath(const QString& path);
 
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
@@ -37,7 +38,11 @@ private:
 
     QList<QRegExp> ignoredFileWildcards_;
     QList<QRegExp> ignoredDirectoryWildcards_;
-    QString canonicalRootPath_;
+
+    QStringList gitIgnoredDirs_;
+    QStringList gitIgnoredFiles_;
+
+    QDir rootDir_;
 };
 
 
