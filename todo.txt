@@ -1,15 +1,16 @@
-Work critical
+        Work critical
 
 Advanced edit operations
 
-Other
+        Other
+
+Open directory from command line
 
 Open recent projects
-File Browser: single click expand and open
-File Browser: switch directory with right click
 View: Zoom with Ctrl+ +-=
 Autocompletable directory change command
 :line-number in Locator
 Trim too many newlines at end of file
 Git ignored files: support windows
 File system model: ignore binary files
+Configurable color themes

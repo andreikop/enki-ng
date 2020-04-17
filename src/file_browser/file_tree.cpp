@@ -12,7 +12,7 @@
 //Extended QFileSystemModel.
 //Shows full path on tool tips
 class FileSystemModel: public QFileSystemModel {
-	using QFileSystemModel::QFileSystemModel;
+    using QFileSystemModel::QFileSystemModel;
 
     QVariant data(const QModelIndex& index, int role) {
         if (role == Qt::ToolTipRole) {
@@ -39,7 +39,7 @@ FileTree::FileTree(QDockWidget* parent):
     connect(&core().project(), &Project::pathChanged,
         [this] {this->setRootIndex(core().project().filteredFsModelRootIndex());});
 
-    connect(this, &FileTree::activated, this, &FileTree::onActivated);
+    connect(this, &FileTree::clicked, this, &FileTree::onActivated);
 
 #if 0
     self._fileActivated.connect(fileBrowser.fileActivated)
@@ -66,12 +66,18 @@ void FileTree::setRootPath(const QDir& dir) {
 #endif
 
 // File or directory doubleClicked
-void FileTree::onActivated(const QModelIndex& index) const {
+void FileTree::onActivated(const QModelIndex& index) {
     QFileInfo fInfo = core().project().filteredFsModel().fileInfo(index);
 
     if (fInfo.isFile()) {
         // self._fileActivated.emit()
         core().workspace().openFile(fInfo.filePath());
         core().workspace().focusCurrentEditor();
+    } else {
+        if (isExpanded(index)) {
+            collapse(index);
+        } else {
+            expand(index);
+        }
     }
 }

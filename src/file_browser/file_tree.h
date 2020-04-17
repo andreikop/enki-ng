@@ -15,5 +15,5 @@ public:
     FileTree(QDockWidget* parent);
 
 private slots:
-    void onActivated(const QModelIndex& index) const;
+    void onActivated(const QModelIndex& index);
 };
