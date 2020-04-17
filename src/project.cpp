@@ -150,13 +150,15 @@ Project::Project():
 }
 
 void Project::setPath(const QDir& path) {
-    path_ = path;
+    QDir absPath = QDir(path.absolutePath());
 
-    QDir::setCurrent(path.path());
+    path_ = absPath;
+
+    QDir::setCurrent(absPath.path());
 
 
-    fsModel_.setRootPath(path.path());
-    filteredFsModel_.setRootPath(path.canonicalPath());
+    fsModel_.setRootPath(absPath.path());
+    filteredFsModel_.setRootPath(absPath.canonicalPath());
 
     // FIXME blocking call!!!!
     SubProcessResult gitRes = runSubProcess(
@@ -171,7 +173,7 @@ void Project::setPath(const QDir& path) {
 
     fileListCache_.reset();
     countOfLoadedDirectories_ = 0;
-    emit(pathChanged(path));
+    emit(pathChanged(absPath));
 }
 
 QDir Project::path() const {

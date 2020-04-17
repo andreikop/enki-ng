@@ -6,6 +6,9 @@ Advanced edit operations
 
 Open directory from command line
 
+Tests for git ignore functionality
+Join file browser and open files docs
+Autocomplete braces
 Open recent projects
 View: Zoom with Ctrl+ +-=
 Autocompletable directory change command
@@ -14,3 +17,6 @@ Trim too many newlines at end of file
 Git ignored files: support windows
 File system model: ignore binary files
 Configurable color themes
+Show current directory on window title
+Home moves to first non-space character
+Search: highlight selected

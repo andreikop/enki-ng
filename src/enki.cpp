@@ -13,6 +13,7 @@
 
 #include "core.h"
 #include "workspace.h"
+#include "project.h"
 #include "main_window.h"
 
 struct FileToOpen {
@@ -27,6 +28,7 @@ struct CommandLine {
 
     QList<FileToOpen> existingFiles;
     QStringList notExistingFiles;
+    QString directory;
     bool debugLogs;
 };
 
@@ -41,6 +43,9 @@ void initCommandLineParser(QCommandLineParser& parser) {
     parser.addVersionOption();
 
     parser.addOption(debugLogsOption);
+
+    parser.addPositionalArgument("[files]", "File to open. Add :line to jump to line");
+    parser.addPositionalArgument("[directory]", "Project directory to switch to");
 }
 
 CommandLine getCmdLineArguments(bool &ok, const QCommandLineParser& parser) {
@@ -51,7 +56,9 @@ CommandLine getCmdLineArguments(bool &ok, const QCommandLineParser& parser) {
     while ( ! posArgs.empty()) {
         QString arg = posArgs.takeFirst();
         QFileInfo fInfo = QFileInfo(arg);
-        if (fInfo.exists()) {
+        if (fInfo.isDir()) {
+            result.directory = arg;
+        } else if (fInfo.exists()) {
             int line = -1;
             if ( (! posArgs.empty()) and posArgs[0].startsWith('+')) {
                 QString lineArg = posArgs.takeFirst().mid(1);  // next argument without +
@@ -63,9 +70,9 @@ CommandLine getCmdLineArguments(bool &ok, const QCommandLineParser& parser) {
                 }
             }
 
-            result.existingFiles << FileToOpen{arg, line};
+            result.existingFiles << FileToOpen{fInfo.absoluteFilePath(), line};
         } else {
-            result.notExistingFiles << arg;
+            result.notExistingFiles << fInfo.absoluteFilePath();
         }
     }
 
@@ -118,6 +125,10 @@ int main(int argc, char** argv) {
     core().init();
 
     core().mainWindow().show();
+
+    if ( ! cmdLine.directory.isEmpty()) {
+        core().project().setPath(cmdLine.directory);
+    }
 
     // Files must be opened After app.exec()
     // otherwise application style is not loaded and the editor can't set it's font properly
