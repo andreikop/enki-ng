@@ -4,10 +4,12 @@ Advanced edit operations
 
 Other
 
+Open recent projects
 File Browser: single click expand and open
 File Browser: switch directory with right click
 View: Zoom with Ctrl+ +-=
 Autocompletable directory change command
-Ignore dirs and files from gitignore
 :line-number in Locator
 Trim too many newlines at end of file
+Git ignored files: support windows
+File system model: ignore binary files

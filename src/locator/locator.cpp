@@ -8,7 +8,7 @@ Locator::Locator():
     showAction_(QIcon::fromTheme("go-jump"), "Go to file in project...", this)
 {
     connect(&showAction_, &QAction::triggered, this, &Locator::onTriggered);
-    showAction_.setShortcut(QKeySequence("Ctrl+L"));
+    showAction_.setShortcut(QKeySequence("Ctrl+P"));
 
     core().mainWindow().menuBar()->navigationMenu()->addAction(&showAction_);
 }
