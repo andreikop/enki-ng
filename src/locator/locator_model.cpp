@@ -7,8 +7,6 @@
 
 #include "open_file_command.h"
 
-#include "locator_model.h"
-
 
 namespace {
 

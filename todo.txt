@@ -2,21 +2,31 @@
 
 Advanced edit operations
 
-        Other
+        Release 1
 
-Open directory from command line
+#1  0x00007f7ce2f6d4df in QString::append(QString const&) () from /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
+#2  0x00007f7ce2fdc81b in QDir::filePath(QString const&) const () from /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
+#3  0x0000562e732d3564 in OpenedFileModel::findUniqParts(QString&, QString&) ()
+#4  0x0000562e732d381b in OpenedFileModel::rebuildUniqPathList() ()
 
+Locator freeze with 100% single core cpu
+Sort files by path?
 Tests for git ignore functionality
 Join file browser and open files docs
-Autocomplete braces
 Open recent projects
 View: Zoom with Ctrl+ +-=
-Autocompletable directory change command
 :line-number in Locator
 Trim too many newlines at end of file
-Git ignored files: support windows
-File system model: ignore binary files
-Configurable color themes
 Show current directory on window title
 Home moves to first non-space character
 Search: highlight selected
+Status bar
+Replace functionality
+Search in directory
+
+    Later
+Autocomplete braces
+Autocompletable directory change command
+File system model: ignore binary files
+Git ignored files: support windows
+Configurable color themes

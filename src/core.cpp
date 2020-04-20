@@ -12,6 +12,7 @@
 #include "search_replace/search_controller.h"
 #include "file_browser/file_browser.h"
 #include "locator/locator.h"
+#include "basic_actions/basic_actions.h"
 
 #include "core.h"
 
@@ -20,21 +21,23 @@ class CoreImplementation: public Core {
 public:
     void init() override {
         settings_ = std::make_unique<Settings>();
+        project_ = std::make_unique<Project>();
         mainWindow_ = std::make_unique<MainWindow>();
         workspace_ = std::make_unique<Workspace>(mainWindow_.get());
-        project_ = std::make_unique<Project>();
+        mainWindow_->updateTitle();
 
         modules_.push_back(std::make_unique<SearchController>());
         modules_.push_back(std::make_unique<FileBrowser>());
         modules_.push_back(std::make_unique<Locator>());
+        modules_.push_back(std::make_unique<BasicActions>());
     }
 
     void cleanup() override {
         modules_.clear();
 
-        project_.reset();
         workspace_.reset();
         mainWindow_.reset();
+        project_.reset();
         settings_.reset();
     }
 

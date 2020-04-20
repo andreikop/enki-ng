@@ -22,6 +22,8 @@ MainWindow::MainWindow() {
     centralLayout_->setContentsMargins(0, 0, 0, 0);
     setCentralWidget(widget);
     setStyleSheet("QMainWindow::separator{width: 4px}");
+
+    connect(&core().project(), &Project::pathChanged, this, &MainWindow::updateTitle);
 }
 
 MenuBar* MainWindow::menuBar() {
@@ -42,7 +44,9 @@ void MainWindow::updateTitle() {
 
     if (editor != nullptr) {
         setWindowTitle(
-            QString("%1[*]").arg(QFileInfo(editor->filePath()).fileName()));
+            QString("%1[*] - %2")
+                .arg(QFileInfo(editor->filePath()).fileName())
+                .arg(core().project().path().dirName()));
 
         setWindowModified(editor->qutepart().document()->isModified());
     } else {
