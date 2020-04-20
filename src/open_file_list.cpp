@@ -67,8 +67,11 @@ public:
             QString bDirName = bPath.dirName();
             a = QDir(aDirName).filePath(a);
             b = QDir(bDirName).filePath(b);
-            aPath.cdUp();
-            bPath.cdUp();
+
+            bool cdOk = aPath.cdUp() && bPath.cdUp();
+            if ( ! cdOk) {
+                break;
+            }
         }
     }
 
