@@ -5,7 +5,6 @@ Advanced edit operations
         Release 1
 
 Sort files by path?
-Tests for git ignore functionality
 Join file browser and open files docs
 Open recent projects
 View: Zoom with Ctrl+ +-=
@@ -16,7 +15,6 @@ Search: highlight selected
 Status bar
 Replace functionality
 Search in directory
-Restore session
 
     Later
 Autocomplete braces
