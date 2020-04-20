@@ -1,5 +1,6 @@
 #pragma once
 
+#include "editor.h"
 #include "module.h"
 
 
@@ -10,4 +11,7 @@ public:
 
 private slots:
     void onSwitchDirectoryAction();
+    void onFileOpen();
+    void onFileSave();
+    void updateEditMenuActions(Editor* editor);
 };

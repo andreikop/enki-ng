@@ -51,13 +51,8 @@ private:
 
     void switchFile(int offset);
 
-    void updateEditMenuActions(Editor* editor);
-
-private slots:
-    void onFileOpen();
-    void onFileSave();
-    void onFileClose();
-
-    void onNextFile();
-    void onPrevFile();
+public slots:
+    void closeCurrentFile();
+    void activateNextFile();
+    void activatePrevFile();
 };

@@ -1,7 +1,8 @@
 #include <QApplication>
 #include <QDebug>
+#include <QDir>
 #include <QFile>
-#include <QFileDialog>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QTextCodec>
 #include <QStatusBar>
@@ -22,13 +23,6 @@ Workspace::Workspace(MainWindow* mainWindow):
     new OpenFileList(mainWindow_, this);
 
     connect(this, &Workspace::currentEditorChanged, mainWindow_, &MainWindow::updateTitle);
-
-    connect(mainWindow->menuBar()->fileOpenAction(), &QAction::triggered, this, &Workspace::onFileOpen);
-    connect(mainWindow->menuBar()->fileSaveAction(), &QAction::triggered, this, &Workspace::onFileSave);
-    connect(mainWindow->menuBar()->fileCloseAction(), &QAction::triggered, this, &Workspace::onFileClose);
-
-    connect(mainWindow->menuBar()->viewPrevFileAction(), &QAction::triggered, this, &Workspace::onPrevFile);
-    connect(mainWindow->menuBar()->viewNextFileAction(), &QAction::triggered, this, &Workspace::onNextFile);
 }
 
 Workspace::~Workspace() {
@@ -149,46 +143,9 @@ void Workspace::setCurrentEditor(Editor* editor) {
         widget_->setCurrentWidget(&(editor->qutepart()));
     }
 
-    updateEditMenuActions(editor);
-
     currentEditor_ = editor;
 
     emit currentEditorChanged(currentEditor_);
-}
-
-void Workspace::updateEditMenuActions(Editor* editor) {
-    QMenu* editorMenu = mainWindow_->menuBar()->editorMenu();
-    editorMenu->clear();
-    QMenu* bookmarksMenu = mainWindow_->menuBar()->bookmarksMenu();
-    bookmarksMenu->clear();
-
-    if (editor != nullptr) {
-        Qutepart::Qutepart& qpart = editor->qutepart();
-
-        QMenu* scrollingMenu = editorMenu->addMenu("Scrolling");
-        scrollingMenu->addAction(qpart.scrollUpAction());
-        scrollingMenu->addAction(qpart.scrollDownAction());
-
-        editorMenu->addAction(qpart.invokeCompletionAction());
-        editorMenu->addAction(qpart.duplicateSelectionAction());
-
-        QMenu* editLinesMenu = editorMenu->addMenu("Lines");
-        editLinesMenu->addAction(qpart.deleteLineAction());
-        editLinesMenu->addAction(qpart.moveLineUpAction());
-        editLinesMenu->addAction(qpart.moveLineDownAction());
-        editLinesMenu->addSeparator();
-        editLinesMenu->addAction(qpart.cutLineAction());
-        editLinesMenu->addAction(qpart.copyLineAction());
-        editLinesMenu->addAction(qpart.pasteLineAction());
-
-        QMenu* indentMenu = editorMenu->addMenu("Indentation");
-        indentMenu->addAction(qpart.increaseIndentAction());
-        indentMenu->addAction(qpart.decreaseIndentAction());
-
-        bookmarksMenu->addAction(qpart.toggleBookmarkAction());
-        bookmarksMenu->addAction(qpart.prevBookmarkAction());
-        bookmarksMenu->addAction(qpart.nextBookmarkAction());
-    }
 }
 
 void Workspace::switchFile(int offset) {
@@ -203,26 +160,7 @@ void Workspace::switchFile(int offset) {
     setCurrentEditor(editors_[index]);
 }
 
-void Workspace::onFileOpen() {
-    QStringList fileNames = QFileDialog::getOpenFileNames(
-        mainWindow_,
-        "Open files",
-        QDir::currentPath());
-
-    foreach(const QString& fileName, fileNames) {
-        openFile(fileName);
-    }
-}
-
-void Workspace::onFileSave() {
-    if (currentEditor_ == nullptr) {
-        return;
-    }
-
-    currentEditor_->saveFile();
-}
-
-void Workspace::onFileClose() {
+void Workspace::closeCurrentFile() {
     if (currentEditor_ != nullptr) {
         Editor* editor = currentEditor_;
 
@@ -237,10 +175,10 @@ void Workspace::onFileClose() {
     }
 }
 
-void Workspace::onNextFile() {
+void Workspace::activateNextFile() {
     switchFile(+1);
 }
 
-void Workspace::onPrevFile() {
+void Workspace::activatePrevFile() {
     switchFile(-1);
 }
