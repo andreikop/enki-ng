@@ -1,3 +1,5 @@
+#include <algorithm>    // std::sort
+
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -123,7 +125,11 @@ void Workspace::showError(const QString& title, const QString& text) {
 
 void Workspace::addEditor(Editor* editor) {
     editors_.append(editor);
-    widget_->addWidget(&editor->qutepart());
+    std::sort(editors_.begin(), editors_.end(),
+        [](Editor* a, Editor* b) {return a->filePath() < b->filePath();});
+
+    int editorIndex = editors_.indexOf(editor);
+    widget_->insertWidget(editorIndex, &editor->qutepart());
 
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             mainWindow_, &QWidget::setWindowModified);

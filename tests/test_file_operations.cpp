@@ -30,9 +30,9 @@ private slots:
         QCOMPARE(model->data(model->index(1, 0)).toString(), QString("b/file.txt"));
 
         core().workspace().openFile("a/another_file.txt");
-        QCOMPARE(model->data(model->index(0, 0)).toString(), QString("a/file.txt"));
-        QCOMPARE(model->data(model->index(1, 0)).toString(), QString("b/file.txt"));
-        QCOMPARE(model->data(model->index(2, 0)).toString(), QString("another_file.txt"));
+        QCOMPARE(model->data(model->index(0, 0)).toString(), QString("another_file.txt"));
+        QCOMPARE(model->data(model->index(1, 0)).toString(), QString("a/file.txt"));
+        QCOMPARE(model->data(model->index(2, 0)).toString(), QString("b/file.txt"));
     }
 
     void OpenFileTwice() {
@@ -45,6 +45,22 @@ private slots:
         QCOMPARE(workspace.editors().length(), 1);
         QVERIFY(workspace.currentEditor()->filePath().endsWith("a/file.txt"));
         QCOMPARE(workspace.currentEditor()->qutepart().textCursor().blockNumber(), 2);
+    }
+
+    void SortFiles() {
+        Workspace& workspace = core().workspace();
+        workspace.openFile("a/file.txt");
+
+        QVERIFY(workspace.editors()[0]->filePath().endsWith("a/file.txt"));
+
+        workspace.openFile("a/another_file.txt");
+        QVERIFY(workspace.editors()[0]->filePath().endsWith("another_file.txt"));
+        QVERIFY(workspace.editors()[1]->filePath().endsWith("a/file.txt"));
+
+        workspace.openFile("b/file.txt");
+        QVERIFY(workspace.editors()[0]->filePath().endsWith("another_file.txt"));
+        QVERIFY(workspace.editors()[1]->filePath().endsWith("a/file.txt"));
+        QVERIFY(workspace.editors()[2]->filePath().endsWith("b/file.txt"));
     }
 };
 

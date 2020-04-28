@@ -2,13 +2,12 @@
 
         Release 1
 
-Sort files by path?
+Home moves to first non-space character
 Join file browser and open files docs
 Open recent projects
 View: Zoom with Ctrl+ +-=
 :line-number in Locator
 Trim too many newlines at end of file
-Home moves to first non-space character
 Search: highlight selected
 Status bar
 Replace functionality
