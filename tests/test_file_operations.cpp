@@ -39,12 +39,12 @@ private slots:
         Workspace& workspace = core().workspace();
         workspace.openFile("a/file.txt");
         QCOMPARE(workspace.editors().length(), 1);
-        QCOMPARE(workspace.currentEditor()->qutepart().textCursor().blockNumber(), 0);
+        QCOMPARE(workspace.currentEditor()->qutepart().textCursorPosition().line, 0);
 
         workspace.openFile("a/file.txt", 2);
         QCOMPARE(workspace.editors().length(), 1);
         QVERIFY(workspace.currentEditor()->filePath().endsWith("a/file.txt"));
-        QCOMPARE(workspace.currentEditor()->qutepart().textCursor().blockNumber(), 2);
+        QCOMPARE(workspace.currentEditor()->qutepart().textCursorPosition().line, 2);
     }
 
     void SortFiles() {

@@ -41,7 +41,7 @@ void Workspace::openFile(const QString& filePath, int line) {
         if (editor->filePath() == canonicalPath) {
             setCurrentEditor(editor);
             if (line != -1) {
-                editor->qutepart().goToLine(line);
+                editor->qutepart().goTo(line);
             }
             return;
         }
@@ -59,7 +59,7 @@ void Workspace::openFile(const QString& filePath, int line) {
 
     Editor *editor = new Editor(canonicalPath, text, mainWindow_);
     if (line != -1) {
-        editor->qutepart().goToLine(line);
+        editor->qutepart().goTo(line);
         // centerCursor() is not effective until windet is drawn. Therefore using timer
         QTimer::singleShot(0, [editor] {editor->qutepart().centerCursor();});
     }
