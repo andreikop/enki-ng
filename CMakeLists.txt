@@ -119,3 +119,4 @@ endfunction()
 
 enki_test(core)
 enki_test(file_operations)
+enki_test(main_window)

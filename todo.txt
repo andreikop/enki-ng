@@ -1,7 +1,5 @@
         Work critical
 
-Advanced edit operations
-
         Release 1
 
 Workspace: do not open duplicate files!
@@ -18,6 +16,10 @@ Replace functionality
 Search in directory
 
     Later
+FS model: refresh automatically
+Edit: Join lines
+Edit: Comment and uncomment lines
+Edit: insert empty lines before and after
 Autocomplete braces
 Autocompletable directory change command
 File system model: ignore binary files

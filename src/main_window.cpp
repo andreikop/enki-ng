@@ -43,10 +43,13 @@ void MainWindow::updateTitle() {
     Editor* editor = core().workspace().currentEditor();
 
     if (editor != nullptr) {
+        QDir projDir = core().project().path();
+
         setWindowTitle(
-            QString("%1[*] - %2")
-                .arg(QFileInfo(editor->filePath()).fileName())
-                .arg(core().project().path().dirName()));
+            QString("%1 - %2[*]")
+                .arg(projDir.dirName())
+                .arg(projDir.relativeFilePath(editor->filePath()))
+            );
 
         setWindowModified(editor->qutepart().document()->isModified());
     } else {
