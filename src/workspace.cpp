@@ -33,13 +33,22 @@ Workspace::~Workspace() {
 
 void Workspace::openFile(const QString& filePath, int line) {
     QFileInfo fileInfo(filePath);
+    QString canonicalPath = fileInfo.canonicalFilePath();
+
+    for(auto editor: editors_) {
+        if (editor->filePath() == canonicalPath) {
+            setCurrentEditor(editor);
+            if (line != -1) {
+                editor->qutepart().goToLine(line);
+            }
+            return;
+        }
+    }
 
     if ( ! fileInfo.exists()) {
         showError("Failed to open file", QString("File '%0' does not exist").arg(filePath));
         return;
     }
-
-    QString canonicalPath = fileInfo.canonicalFilePath();
 
     QString text = readFile(canonicalPath);
     if (text.isNull()) { // failed to read, error emitted

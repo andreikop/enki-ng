@@ -20,7 +20,7 @@ private slots:
         core().cleanup();
     }
 
-    void DuplicatingFileNames() {
+    void DuplicatingFileNamesInOpenFileList() {
         QAbstractItemModel* model = core().mainWindow().findChild<QAbstractItemModel*>("OpenedFileModel");
         core().workspace().openFile("a/file.txt");
         QCOMPARE(model->data(model->index(0, 0)).toString(), QString("file.txt"));
@@ -33,6 +33,18 @@ private slots:
         QCOMPARE(model->data(model->index(0, 0)).toString(), QString("a/file.txt"));
         QCOMPARE(model->data(model->index(1, 0)).toString(), QString("b/file.txt"));
         QCOMPARE(model->data(model->index(2, 0)).toString(), QString("another_file.txt"));
+    }
+
+    void OpenFileTwice() {
+        Workspace& workspace = core().workspace();
+        workspace.openFile("a/file.txt");
+        QCOMPARE(workspace.editors().length(), 1);
+        QCOMPARE(workspace.currentEditor()->qutepart().textCursor().blockNumber(), 0);
+
+        workspace.openFile("a/file.txt", 2);
+        QCOMPARE(workspace.editors().length(), 1);
+        QVERIFY(workspace.currentEditor()->filePath().endsWith("a/file.txt"));
+        QCOMPARE(workspace.currentEditor()->qutepart().textCursor().blockNumber(), 2);
     }
 };
 

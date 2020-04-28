@@ -2,7 +2,6 @@
 
         Release 1
 
-Workspace: do not open duplicate files!
 Sort files by path?
 Join file browser and open files docs
 Open recent projects
