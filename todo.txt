@@ -2,7 +2,6 @@
 
         Release 1
 
-Home moves to first non-space character
 Join file browser and open files docs
 Open recent projects
 View: Zoom with Ctrl+ +-=
@@ -15,7 +14,6 @@ Search in directory
 
     Later
 FS model: refresh automatically
-Edit: Join lines
 Edit: Comment and uncomment lines
 Edit: insert empty lines before and after
 Autocomplete braces
