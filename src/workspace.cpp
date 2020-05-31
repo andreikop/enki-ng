@@ -69,7 +69,7 @@ void Workspace::openFile(const QString& filePath, int line) {
     editor->qutepart().setFocus();
 }
 
-void Workspace::createEmptyNotSavedFile(const QString& path) {
+Editor* Workspace::createEmptyNotSavedFile(const QString& path) {
     QFileInfo fInfo(path);
     QString absPath = path;
     if ( ! fInfo.isAbsolute()) {
@@ -83,6 +83,8 @@ void Workspace::createEmptyNotSavedFile(const QString& path) {
     addEditor(editor);
     setCurrentEditor(editor);
     editor->qutepart().setFocus();
+
+    return editor;
 }
 
 const QList<Editor*>& Workspace::editors() const {

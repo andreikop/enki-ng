@@ -20,7 +20,7 @@ public:
     virtual ~Workspace();
 
     void openFile(const QString& filePath, int line=-1);
-    void createEmptyNotSavedFile(const QString& path);
+    Editor* createEmptyNotSavedFile(const QString& path);
 
 
     const QList<Editor*>& editors() const;

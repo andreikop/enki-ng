@@ -2,15 +2,16 @@
 
         Release 1
 
+API docs
 Join file browser and open files docs
 Open recent projects
 View: Zoom with Ctrl+ +-=
 :line-number in Locator
-Trim too many newlines at end of file
 Search: highlight selected
 Status bar
 Replace functionality
 Search in directory
+GUI configuration
 
     Later
 FS model: refresh automatically

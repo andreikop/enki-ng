@@ -37,6 +37,7 @@ QString defaultFontFamily() {
 Option<int> fontSizeOption("editor/font_size", -1);
 Option<QString> fontFamilyOption("editor/font_family", QString::null);
 Option<bool> stripTrailingWhitespaceOption("editor/strip_trailing_whitespace_on_save", true);
+Option<bool> stripTrailingEmptyLinesOption("editor/strip_trailing_empty_lines_on_save", true);
 Option<bool> eolAtEndOfFileOption("editor/append_eol_at_end_of_file", true);
 
 QString fontFamily() {
@@ -85,6 +86,10 @@ const QString& Editor::filePath() const {
     return filePath_;
 }
 
+void Editor::setFilePath(const QString& filePath) {
+    filePath_ = filePath;
+}
+
 Qutepart::Qutepart& Editor::qutepart() {
     return qutepart_;
 }
@@ -93,9 +98,12 @@ void Editor::saveFile() {
     // assume file name is known
     // asume directory exists
 
-
     if (stripTrailingWhitespaceOption.value()) {
         stripTrailingWhitespace();
+    }
+
+    if (stripTrailingEmptyLinesOption.value()) {
+        stripTrailingEmptyLines();
     }
 
     QString text = textForSaving();
@@ -165,5 +173,17 @@ void Editor::stripTrailingWhitespace() {
         if (trailingCount) {
             line.remove(line.length() - trailingCount, trailingCount);
         }
+    }
+}
+
+void Editor::stripTrailingEmptyLines() {
+    Qutepart::AtomicEditOperation op(&qutepart_);
+
+    Qutepart::Lines lines = qutepart_.lines();
+
+    while(lines.count() > 1 &&
+          lines.last().length() == 0 &&
+          lines.at(lines.count() - 2).length() == 0) {
+        lines.popAt(lines.count() - 1);
     }
 }
