@@ -5,17 +5,17 @@
 #include <QDialog>
 #include <QMainWindow>
 
-#include "open_file_command.h"
+#include "lib/locator/locator_command.h"
 
 #include "ui_LocatorDialog.h"
 
 
 class LocatorDialog: public QDialog, private Ui_LocatorDialog {
 public:
-    LocatorDialog(QMainWindow* parent);
+    LocatorDialog(QMainWindow* parent, std::shared_ptr<LocatorCommand> command);
 
 private:
-    std::unique_ptr<OpenFileCommand> command_;
+    std::shared_ptr<LocatorCommand> command_;
 
     void focusFirstItem();
     bool eventFilter(QObject *obj, QEvent *event) override;

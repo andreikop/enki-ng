@@ -5,10 +5,10 @@
 #include "core/module.h"
 
 
-class Locator: public Module {
+class OpenFile: public Module {
     Q_OBJECT
 public:
-    Locator();
+    OpenFile();
 
 private:
     QAction showAction_;

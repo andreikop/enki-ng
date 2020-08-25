@@ -11,7 +11,7 @@
 
 #include "modules/search_replace/search_controller.h"
 #include "modules/file_browser/file_browser.h"
-#include "modules/locator/locator.h"
+#include "modules/open_file/open_file.h"
 #include "modules/basic_actions/basic_actions.h"
 #include "modules/recent_dirs/recent_dirs.h"
 
@@ -29,7 +29,7 @@ public:
 
         modules_.push_back(std::make_unique<SearchController>());
         modules_.push_back(std::make_unique<FileBrowser>());
-        modules_.push_back(std::make_unique<Locator>());
+        modules_.push_back(std::make_unique<OpenFile>());
         modules_.push_back(std::make_unique<BasicActions>());
         modules_.push_back(std::make_unique<RecentDirs>());
     }

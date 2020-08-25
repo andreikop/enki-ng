@@ -6,7 +6,6 @@
 #include <QAbstractTextDocumentLayout>
 
 #include "locator_dialog.h"
-#include "open_file_command.h"
 
 
 namespace {
@@ -89,8 +88,9 @@ public:
 }  // anonymous namespace
 
 
-LocatorDialog::LocatorDialog(QMainWindow* parent):
-        QDialog(parent)
+LocatorDialog::LocatorDialog(QMainWindow* parent, std::shared_ptr<LocatorCommand> command):
+        QDialog(parent),
+        command_(command)
 {
     setupUi(this);
     QFont biggerFont = font();
@@ -106,14 +106,13 @@ LocatorDialog::LocatorDialog(QMainWindow* parent):
     int width = QFontMetrics(biggerFont).width(QString().fill('x', 64));  // width of 64 'x' letters
     resize(width, width * 0.62);
 
-    command_ = std::make_unique<OpenFileCommand>();
     listView->setModel(&command_->model());
     listView->setItemDelegate(new HTMLDelegate(listView));
 
     connect(lineEdit, &QLineEdit::textChanged, this, &LocatorDialog::onCommandTextChanged);
 
-    connect(listView, &QListView::activated, command_.get(), &OpenFileCommand::onItemActivated);
-    connect(command_.get(), &OpenFileCommand::done, this, [this] {this->done(0);});
+    connect(listView, &QListView::activated, command_.get(), &LocatorCommand::onItemActivated);
+    connect(command_.get(), &LocatorCommand::done, this, [this] {this->done(0);});
 
     focusFirstItem();
 }
