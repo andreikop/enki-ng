@@ -7,7 +7,7 @@
 
 #include "qutepart/qutepart.h"
 
-#include "module.h"
+#include "core/module.h"
 
 #include "search_widget.h"
 

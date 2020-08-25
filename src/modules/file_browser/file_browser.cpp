@@ -1,5 +1,5 @@
-#include "core.h"
-#include "main_window.h"
+#include "core/core.h"
+#include "core/main_window.h"
 
 #include "file_tree.h"
 #include "file_browser.h"

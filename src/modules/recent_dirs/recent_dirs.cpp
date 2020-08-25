@@ -1,9 +1,9 @@
 #include <QDebug>
 
-#include "core.h"
-#include "main_window.h"
-#include "option.h"
-#include "project.h"
+#include "core/core.h"
+#include "core/main_window.h"
+#include "core/option.h"
+#include "core/project.h"
 
 #include "recent_dirs.h"
 

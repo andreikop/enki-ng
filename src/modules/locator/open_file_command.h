@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "locator_list_model.h"
+#include "lib/locator/locator_list_model.h"
 
 
 class OpenFileCommand: public QObject {

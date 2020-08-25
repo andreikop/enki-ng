@@ -1,9 +1,9 @@
 #include <QFileDialog>
 
-#include "core.h"
-#include "project.h"
-#include "main_window.h"
-#include "workspace.h"
+#include "core/core.h"
+#include "core/project.h"
+#include "core/main_window.h"
+#include "core/workspace.h"
 
 #include "basic_actions.h"
 

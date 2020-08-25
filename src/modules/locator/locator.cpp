@@ -1,7 +1,7 @@
-#include "core.h"
-#include "main_window.h"
-#include "locator_dialog.h"
+#include "core/core.h"
+#include "core/main_window.h"
 
+#include "locator_dialog.h"
 #include "locator.h"
 
 Locator::Locator():

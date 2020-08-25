@@ -11,10 +11,10 @@
 
 #include "qutepart/qutepart.h"
 
-#include "core.h"
-#include "workspace.h"
-#include "project.h"
-#include "main_window.h"
+#include "core/core.h"
+#include "core/workspace.h"
+#include "core/project.h"
+#include "core/main_window.h"
 
 struct FileToOpen {
     QString path;

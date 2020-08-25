@@ -2,7 +2,7 @@
 
 #include <QAction>
 
-#include "module.h"
+#include "core/module.h"
 
 
 class Locator: public Module {

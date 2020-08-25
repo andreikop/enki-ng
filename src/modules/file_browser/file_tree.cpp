@@ -3,9 +3,9 @@
 #include <QSortFilterProxyModel>
 #include <QDebug>
 
-#include "core.h"
-#include "project.h"
-#include "workspace.h"
+#include "core/core.h"
+#include "core/project.h"
+#include "core/workspace.h"
 
 #include "file_tree.h"
 

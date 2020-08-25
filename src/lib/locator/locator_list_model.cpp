@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "core.h"
+#include "core/core.h"
 
 #include "locator_list_model.h"
 

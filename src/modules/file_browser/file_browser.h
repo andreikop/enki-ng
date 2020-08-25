@@ -5,7 +5,7 @@
 #include <QDockWidget>
 #include <QMainWindow>
 
-#include "module.h"
+#include "core/module.h"
 
 
 class FileBrowserDock: public QDockWidget {

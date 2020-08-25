@@ -1,8 +1,8 @@
 #include <QDebug>
 
-#include "core.h"
-#include "workspace.h"
-#include "project.h"
+#include "core/core.h"
+#include "core/workspace.h"
+#include "core/project.h"
 
 #include "open_file_command.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "editor.h"
-#include "module.h"
+#include "core/module.h"
+#include "core/editor.h"
 
 
 class BasicActions: public Module {

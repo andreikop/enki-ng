@@ -1,8 +1,8 @@
 #include <QStatusBar>
 #include <QDebug>
 
-#include "core.h"
-#include "workspace.h"
+#include "core/core.h"
+#include "core/workspace.h"
 
 #include "search_controller.h"
 #include "search_flags.h"
