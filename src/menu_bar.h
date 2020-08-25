@@ -24,10 +24,12 @@ public:
     QMenu* searchMenu() const;
     QMenu* bookmarksMenu() const;
     QMenu* editorMenu() const;
+    QMenu* zoomMenu() const;
 
 private:
     QMenu* fileMenu_;
     QMenu* viewMenu_;
+    QMenu* zoomMenu_;
 
     QAction* fileOpenAction_;
     QAction* fileSaveAction_;

@@ -64,6 +64,8 @@ void BasicActions::updateEditMenuActions(Editor* editor) {
     editorMenu->clear();
     QMenu* bookmarksMenu = core().mainWindow().menuBar()->bookmarksMenu();
     bookmarksMenu->clear();
+    QMenu* zoomMenu = core().mainWindow().menuBar()->zoomMenu();
+    zoomMenu->clear();
 
     if (editor != nullptr) {
         Qutepart::Qutepart& qpart = editor->qutepart();
@@ -93,5 +95,8 @@ void BasicActions::updateEditMenuActions(Editor* editor) {
         bookmarksMenu->addAction(qpart.toggleBookmarkAction());
         bookmarksMenu->addAction(qpart.prevBookmarkAction());
         bookmarksMenu->addAction(qpart.nextBookmarkAction());
+
+        zoomMenu->addAction(qpart.zoomInAction());
+        zoomMenu->addAction(qpart.zoomOutAction());
     }
 }

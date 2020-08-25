@@ -2,18 +2,24 @@
 
         Release 1
 
-API docs
 Join file browser and open files docs
 Open recent projects
-View: Zoom with Ctrl+ +-=
 :line-number in Locator
 Search: highlight selected
 Status bar
 Replace functionality
 Search in directory
 GUI configuration
+Vim
+Document API
+
+    Rework FS Model
+
+Show something when directory not under GIT
 
     Later
+
+Zoom: remember zoom
 FS model: refresh automatically
 Edit: Comment and uncomment lines
 Edit: insert empty lines before and after

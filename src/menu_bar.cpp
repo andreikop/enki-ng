@@ -31,6 +31,10 @@ QMenu* MenuBar::viewMenu() const {
     return viewMenu_;
 }
 
+QMenu* MenuBar::zoomMenu() const {
+    return zoomMenu_;
+}
+
 QAction* MenuBar::fileOpenAction() const {
     return fileOpenAction_;
 }
@@ -98,6 +102,7 @@ void MenuBar::initFileMenu() {
 void MenuBar::initViewMenu() {
     viewPrevFileAction_ = addActionToMenu(viewMenu_, "Previous file", QKeySequence("Ctrl+PgUp"));
     viewNextFileAction_ = addActionToMenu(viewMenu_, "Next file", QKeySequence("Ctrl+PgDown"));
+    zoomMenu_ = viewMenu_->addMenu("Zoom");
 }
 
 void MenuBar::initNavigationMenu() {
