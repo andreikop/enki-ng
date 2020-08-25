@@ -46,6 +46,12 @@ public:
         return defaultValue_;
     }
 
+    void setValue(const T &value) {
+        QSettings& storage = core().settings().storage();
+        storage.setValue(key_, value);
+    }
+
+
 private:
     QString key_;
     T defaultValue_;

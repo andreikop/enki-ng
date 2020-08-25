@@ -51,6 +51,10 @@ QAction* MenuBar::switchDirectoryAction() const {
     return switchDirectoryAction_;
 }
 
+QAction* MenuBar::recentDirsAction() const {
+    return recentDirsAction_;
+}
+
 QAction* MenuBar::viewPrevFileAction() const {
     return viewPrevFileAction_;
 }
@@ -90,6 +94,8 @@ void MenuBar::initFileMenu() {
 
     switchDirectoryAction_ = addActionToMenu(
         fileMenu_, "Switch directory...", QKeySequence("Shift+Ctrl+O"));
+    recentDirsAction_ = addActionToMenu(
+        fileMenu_, "Recent directories...", QKeySequence("Shift+Ctrl+R"));
 
     fileMenu_->addSeparator();
 

@@ -16,6 +16,7 @@ public:
     QAction* fileCloseAction() const;
 
     QAction* switchDirectoryAction() const;
+    QAction* recentDirsAction() const;
 
     QAction* viewPrevFileAction() const;
     QAction* viewNextFileAction() const;
@@ -36,6 +37,7 @@ private:
     QAction* fileCloseAction_;
 
     QAction* switchDirectoryAction_;
+    QAction* recentDirsAction_;
 
     QAction* viewPrevFileAction_;
     QAction* viewNextFileAction_;

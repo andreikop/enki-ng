@@ -13,6 +13,7 @@
 #include "file_browser/file_browser.h"
 #include "locator/locator.h"
 #include "basic_actions/basic_actions.h"
+#include "recent_dirs/recent_dirs.h"
 
 #include "core.h"
 
@@ -30,6 +31,7 @@ public:
         modules_.push_back(std::make_unique<FileBrowser>());
         modules_.push_back(std::make_unique<Locator>());
         modules_.push_back(std::make_unique<BasicActions>());
+        modules_.push_back(std::make_unique<RecentDirs>());
     }
 
     void cleanup() override {
