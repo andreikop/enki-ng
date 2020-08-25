@@ -5,7 +5,10 @@
 #include "core/option.h"
 #include "core/project.h"
 
+#include "lib/locator/locator_dialog.h"
+
 #include "recent_dirs.h"
+#include "recent_dirs_command.h"
 
 namespace {
 
@@ -27,6 +30,11 @@ RecentDirs::RecentDirs()
 
 void RecentDirs::onRecentDirsTriggered() {
     qDebug() << "recent dirs!" << recentDirsOption.value();
+    LocatorDialog LocatorDialog(
+        &core().mainWindow(),
+        std::make_shared<RecentDirsCommand>(
+            recentDirsOption.value()));
+    LocatorDialog.exec();
 }
 
 void RecentDirs::onDirectorySwitched(const QDir& dir) {
