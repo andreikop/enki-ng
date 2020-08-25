@@ -5,7 +5,6 @@
 #include <QDialog>
 #include <QMainWindow>
 
-#include "locator_model.h"
 #include "open_file_command.h"
 
 #include "ui_LocatorDialog.h"

@@ -12,6 +12,7 @@ Search in directory
 GUI configuration
 Vim
 Document API
+Zoom: apply for all editors
 
     Rework FS Model
 

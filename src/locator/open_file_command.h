@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "locator_model.h"
+#include "locator_list_model.h"
 
 
 class OpenFileCommand: public QObject {
@@ -20,5 +20,5 @@ signals:
     void done();
 
 private:
-    LocatorModel model_;
+    LocatorListModel model_;
 };

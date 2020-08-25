@@ -3,13 +3,19 @@
 #include <vector>
 
 #include <QAbstractItemModel>
+#include <QStringList>
 
 
-class OpenFileCommand;
-
-class LocatorModel: public QAbstractItemModel {
+/**
+This is a model which represents a list of items one of which
+can be choosen in Locator dialogue with fuzzy search.
+Use cases are:
+    - Choose file from project when opening
+    - Choose one of the items from the list of recent projects
+*/
+class LocatorListModel: public QAbstractItemModel {
 public:
-    LocatorModel(const OpenFileCommand& command);
+    LocatorListModel(const QStringList& allItems);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -18,15 +24,14 @@ public:
     QModelIndex parent(const QModelIndex &index) const override;
 
     void setCommandText(const QString& text);
-    const QString& filePath(const QModelIndex& index) const;
+    const QString& text(const QModelIndex& index) const;
 
 private:
-    const OpenFileCommand& command_;
-
+    QStringList allItems_;
     QString commandText_;
     struct Item {
         double score;
-        QString filePath;
+        QString text;
     };
 
     std::vector<Item> items_;

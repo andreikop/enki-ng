@@ -2,12 +2,13 @@
 
 #include "core.h"
 #include "workspace.h"
+#include "project.h"
 
 #include "open_file_command.h"
 
 
 OpenFileCommand::OpenFileCommand():
-    model_(LocatorModel(*this))
+    model_(LocatorListModel(core().project().fileList()))
 {}
 
 QAbstractItemModel& OpenFileCommand::model() {
@@ -19,7 +20,7 @@ void OpenFileCommand::setCommandText(const QString& text) {
 }
 
 void OpenFileCommand::onItemActivated(const QModelIndex& index) {
-    const QString& path = model_.filePath(index);
+    const QString& path = model_.text(index);
     core().workspace().openFile(path);
     emit(done());
 }

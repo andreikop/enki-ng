@@ -3,31 +3,30 @@
 #include <QDebug>
 
 #include "core.h"
-#include "project.h"
 
-#include "open_file_command.h"
+#include "locator_list_model.h"
 
 
 namespace {
 
-double getFileScore(const QString& filePath, const QString& filterText) {
+double getFileScore(const QString& text, const QString& filterText) {
     if (filterText.isEmpty()) {
         return 0.;
     }
 
-    int textCursor = filePath.length();
+    int textCursor = text.length();
 
     double score = 0.;
 
     for (auto it = filterText.rbegin(); it != filterText.rend(); ++it) {
         QChar ch = *it;
-        QStringRef textRef = filePath.leftRef(textCursor);
+        QStringRef textRef = text.leftRef(textCursor);
         int charIndex = textRef.lastIndexOf(ch);
 
         if (charIndex == -1) {
             return -1;
         } else {
-            score += (filePath.length() - charIndex);
+            score += (text.length() - charIndex);
             textCursor = charIndex;
         }
     }
@@ -38,11 +37,11 @@ double getFileScore(const QString& filePath, const QString& filterText) {
 /* Prepare file path to show in the listview.
 NOTE This method contains some common code with getFileScore
 */
-QString formatFilePath(const QString& filePath, QString filterText) {
+QString formatText(const QString& text, QString filterText) {
     QStringList resultParts;
 
     auto filterIt = filterText.rbegin();
-    for (auto pathIt = filePath.rbegin(); pathIt != filePath.rend(); ++pathIt) {
+    for (auto pathIt = text.rbegin(); pathIt != text.rend(); ++pathIt) {
         QChar pathCh = *pathIt;
 
         if (filterIt != filterText.rend() && (*filterIt).toLower() == pathCh.toLower()) {
@@ -64,15 +63,15 @@ QString formatFilePath(const QString& filePath, QString filterText) {
 } // anonymous namespace
 
 
-LocatorModel::LocatorModel(const OpenFileCommand& command):
-    command_(command)
+LocatorListModel::LocatorListModel(const QStringList& allItems):
+    allItems_(allItems)
 {
-    foreach(const QString& filePath, core().project().fileList()) {
-        items_.push_back(Item{0, filePath});
+    foreach(const QString& item, allItems) {
+        items_.push_back(Item{0, item});
     }
 }
 
-int LocatorModel::rowCount(const QModelIndex &parent) const {
+int LocatorListModel::rowCount(const QModelIndex &parent) const {
     if (parent.isValid()) {
         return 0;
     } else {
@@ -80,35 +79,36 @@ int LocatorModel::rowCount(const QModelIndex &parent) const {
     }
 }
 
-int LocatorModel::columnCount(const QModelIndex& /*parent*/) const {
+int LocatorListModel::columnCount(const QModelIndex& /*parent*/) const {
     return 1;
 }
 
-QVariant LocatorModel::data(const QModelIndex &index, int role) const {
+QVariant LocatorListModel::data(const QModelIndex &index, int role) const {
     if (role == Qt::DisplayRole) {
-        return formatFilePath(items_[index.row()].filePath, commandText_);
+        return formatText(items_[index.row()].text, commandText_);
     } else {
         return QVariant();  // TODO return file icon
     }
 }
 
-QModelIndex LocatorModel::index(int row, int column, const QModelIndex& /*parent*/) const {
+QModelIndex LocatorListModel::index(int row, int column, const QModelIndex& /*parent*/) const {
     return createIndex(row, column);
 }
 
-QModelIndex LocatorModel::parent(const QModelIndex& /*index*/) const {
+QModelIndex LocatorListModel::parent(const QModelIndex& /*index*/) const {
     return QModelIndex();
 }
 
-void LocatorModel::setCommandText(const QString& text) {
-    commandText_ = text;
+void LocatorListModel::setCommandText(const QString& cmdText) {
+    commandText_ = cmdText;
+    QString cmdTextLower = cmdText.toLower();
     beginResetModel();
 
     items_.clear();
-    foreach(const QString& filePath, core().project().fileList()) {
-        double score = getFileScore(filePath.toLower(), text.toLower());
+    foreach(const QString& text, allItems_) {
+        double score = getFileScore(text.toLower(), cmdTextLower);
         if (score >= 0) {
-            items_.push_back(Item{score, filePath});
+            items_.push_back(Item{score, text});
         }
     }
 
@@ -121,8 +121,8 @@ void LocatorModel::setCommandText(const QString& text) {
     endResetModel();
 }
 
-const QString& LocatorModel::filePath(const QModelIndex& index) const {
+const QString& LocatorListModel::text(const QModelIndex& index) const {
     assert(index.column() == 0);
     assert( ! index.parent().isValid());
-    return items_[index.row()].filePath;
+    return items_[index.row()].text;
 }
