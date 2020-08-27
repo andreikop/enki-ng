@@ -2,6 +2,13 @@
 
         Release 1
 
+When duplicating lines with Alt+D, preserve cursor column
+Create new file with Ctrl+N
+Restore main window geometry on start
+Bookmarks are not updated on jupm to bookmark
+Autocompletion sometimes doesn't work
+Line numbers are not updated on pgup pgdown
+
 Join file browser and open files docs
 :line-number in Locator
 Search: highlight selected
@@ -11,10 +18,7 @@ Search in directory
 GUI configuration
 Vim
 Document API
-Create new file with Ctrl+N
 Restore previous session on start
-Restore main window geometry on start
-Shortcut to open new line
 Why public and private is indented when : pressed?
 
 Bad hanging indent handling C++
@@ -29,11 +33,9 @@ After file reopened and #if 0 removed, not rehighlighted back
 
 Show something when directory not under GIT
 
-When duplicating lines with Alt+D, preserve cursor column
 
     Later
 
-Zoom: remember zoom
 FS model: refresh automatically
 Edit: Comment and uncomment lines
 Edit: insert empty lines before and after

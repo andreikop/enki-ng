@@ -85,6 +85,9 @@ void BasicActions::updateEditMenuActions(Editor* editor) {
         editLinesMenu->addAction(qpart.pasteLineAction());
         editLinesMenu->addSeparator();
         editLinesMenu->addAction(qpart.joinLinesAction());
+        editLinesMenu->addSeparator();
+        editLinesMenu->addAction(qpart.insertLineAboveAction());
+        editLinesMenu->addAction(qpart.insertLineBelowAction());
 
         QMenu* indentMenu = editorMenu->addMenu("Indentation");
         indentMenu->addAction(qpart.increaseIndentAction());
