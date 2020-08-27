@@ -80,6 +80,11 @@ Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent
     }
 
     qutepart_.setFont(QFont(fontFamily(), fontSize()));
+
+    // Enki creates own more advanced zoom actions
+    qutepart_.zoomInAction()->setEnabled(false);
+    qutepart_.zoomOutAction()->setEnabled(false);
+
 }
 
 const QString& Editor::filePath() const {
@@ -134,6 +139,10 @@ void Editor::saveFile() {
 
     // TODO update state flags
     // TODO detect syntax if file name changed
+}
+
+Option<int>& Editor::getFontSizeOption() {
+    return fontSizeOption;
 }
 
 QString Editor::textForSaving() const {

@@ -14,6 +14,7 @@
 #include "modules/open_file/open_file.h"
 #include "modules/basic_actions/basic_actions.h"
 #include "modules/recent_dirs/recent_dirs.h"
+#include "modules/zoom/zoom.h"
 
 #include "core.h"
 
@@ -32,6 +33,7 @@ public:
         modules_.push_back(std::make_unique<OpenFile>());
         modules_.push_back(std::make_unique<BasicActions>());
         modules_.push_back(std::make_unique<RecentDirs>());
+        modules_.push_back(std::make_unique<Zoom>());
     }
 
     void cleanup() override {

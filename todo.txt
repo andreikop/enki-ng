@@ -3,7 +3,6 @@
         Release 1
 
 Join file browser and open files docs
-Open recent projects
 :line-number in Locator
 Search: highlight selected
 Status bar
@@ -12,11 +11,25 @@ Search in directory
 GUI configuration
 Vim
 Document API
-Zoom: apply for all editors
+Create new file with Ctrl+N
+Restore previous session on start
+Restore main window geometry on start
+Shortcut to open new line
+Why public and private is indented when : pressed?
+
+Bad hanging indent handling C++
+    zoomInAction_ = core().mainWindow().menuBar().zoomMenu().addAction(
+        "Zoom In",
+
+Comment/Uncomment code block with Ctrl+/
+#if 0 is not highlighted as a comment
+After file reopened and #if 0 removed, not rehighlighted back
 
     Rework FS Model
 
 Show something when directory not under GIT
+
+When duplicating lines with Alt+D, preserve cursor column
 
     Later
 

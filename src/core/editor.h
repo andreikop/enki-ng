@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 
+#include "core/option.h"
 #include "qutepart/qutepart.h"
 
 
@@ -17,6 +18,8 @@ public:
 
     void saveFile();
 
+    static Option<int>& getFontSizeOption();
+
 private:
     QString filePath_;
     Qutepart::Qutepart qutepart_;
@@ -27,4 +30,3 @@ private:
     void stripTrailingWhitespace();
     void stripTrailingEmptyLines();
 };
-
