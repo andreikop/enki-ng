@@ -20,6 +20,7 @@ public:
     virtual ~Workspace();
 
     void openFile(const QString& filePath, int line=-1);
+    Editor* createNewFile();
     Editor* createEmptyNotSavedFile(const QString& path);
 
 
@@ -35,6 +36,7 @@ signals:
     void editorOpened(Editor* editor);
     void editorClosed(Editor* editor);
     void modifiedChanged(Editor* editor, bool modified);
+    void editorFilePathChanged(Editor* editor, const QString& newPath);
 
 private:
     QStackedWidget* widget_; // owned by the main window

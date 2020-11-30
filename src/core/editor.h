@@ -7,7 +7,8 @@
 
 
 // File editor. Contains editor widget(Qutepart) instance and related information
-class Editor {
+class Editor: public QObject {
+    Q_OBJECT
 public:
     Editor(const QString& filePath, const QString& text, QMainWindow* parent);
 
@@ -20,6 +21,9 @@ public:
 
     static Option<int>& getFontSizeOption();
 
+signals:
+    void filePathChanged(const QString& newPath);
+
 private:
     QString filePath_;
     Qutepart::Qutepart qutepart_;
@@ -29,4 +33,6 @@ private:
 
     void stripTrailingWhitespace();
     void stripTrailingEmptyLines();
+
+    void autoDetectLanguage();
 };

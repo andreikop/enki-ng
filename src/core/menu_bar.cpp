@@ -35,6 +35,10 @@ QMenu* MenuBar::zoomMenu() const {
     return zoomMenu_;
 }
 
+QAction* MenuBar::fileNewAction() const {
+    return fileNewAction_;
+}
+
 QAction* MenuBar::fileOpenAction() const {
     return fileOpenAction_;
 }
@@ -80,6 +84,7 @@ QMenu* MenuBar::editorMenu() const {
 }
 
 void MenuBar::initFileMenu() {
+    fileNewAction_ = addActionToMenu(fileMenu_, "New", QKeySequence::New);
     fileOpenAction_ = addActionToMenu(fileMenu_, "Open...", QKeySequence::Open);
     fileSaveAction_ = addActionToMenu(fileMenu_, "Save", QKeySequence::Save);
 

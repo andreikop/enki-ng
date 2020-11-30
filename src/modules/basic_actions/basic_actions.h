@@ -11,6 +11,7 @@ public:
 
 private slots:
     void onSwitchDirectoryAction();
+    void onFileNew();
     void onFileOpen();
     void onFileSave();
     void updateEditMenuActions(Editor* editor);

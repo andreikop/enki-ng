@@ -16,6 +16,7 @@ BasicActions::BasicActions() {
         mainWindow.menuBar()->switchDirectoryAction(), &QAction::triggered,
         this, &BasicActions::onSwitchDirectoryAction);
 
+    connect(menuBar->fileNewAction(), &QAction::triggered, this, &BasicActions::onFileNew);
     connect(menuBar->fileOpenAction(), &QAction::triggered, this, &BasicActions::onFileOpen);
     connect(menuBar->fileSaveAction(), &QAction::triggered, this, &BasicActions::onFileSave);
 
@@ -37,6 +38,10 @@ void BasicActions::onSwitchDirectoryAction() {
     if ( ! path.isNull()) {
         core().project().setPath(path);
     }
+}
+
+void BasicActions::onFileNew() {
+    core().workspace().createNewFile();
 }
 
 void BasicActions::onFileOpen() {

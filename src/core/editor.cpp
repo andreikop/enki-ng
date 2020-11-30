@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "core.h"
 #include "option.h"
@@ -72,11 +73,8 @@ Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent
     qutepart_(parent, text),
     lineSeparator("\n")  // make configurable, autodetect
 {
-    Qutepart::LangInfo langInfo = Qutepart::chooseLanguage(
-        QString::null, QString::null, filePath);
-    if (langInfo.isValid()) {
-        qutepart_.setHighlighter(langInfo.id);
-        qutepart_.setIndentAlgorithm(langInfo.indentAlg);
+    if ( ! filePath.isNull()) {
+        autoDetectLanguage();
     }
 
     qutepart_.setFont(QFont(fontFamily(), fontSize()));
@@ -101,6 +99,17 @@ Qutepart::Qutepart& Editor::qutepart() {
 
 void Editor::saveFile() {
     // assume file name is known
+
+    if (filePath_.isNull()) {
+        filePath_ = QFileDialog::getSaveFileName(&qutepart_, "Save file as...");
+        if (filePath_.isNull()) {
+            return;
+        } else {
+            autoDetectLanguage();
+            emit filePathChanged(filePath_);
+        }
+    }
+
     // asume directory exists
 
     if (stripTrailingWhitespaceOption.value()) {
@@ -194,5 +203,14 @@ void Editor::stripTrailingEmptyLines() {
           lines.last().length() == 0 &&
           lines.at(lines.count() - 2).length() == 0) {
         lines.popAt(lines.count() - 1);
+    }
+}
+
+void Editor::autoDetectLanguage() {
+    Qutepart::LangInfo langInfo = Qutepart::chooseLanguage(
+        QString::null, QString::null, filePath_);
+    if (langInfo.isValid()) {
+        qutepart_.setHighlighter(langInfo.id);
+        qutepart_.setIndentAlgorithm(langInfo.indentAlg);
     }
 }

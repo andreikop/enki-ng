@@ -44,11 +44,17 @@ void MainWindow::updateTitle() {
 
     if (editor != nullptr) {
         QDir projDir = core().project().path();
+        QString filePathPart = editor->filePath();
+        if (filePathPart.isNull()) {
+            filePathPart = "New file";
+        } else {
+            filePathPart = projDir.relativeFilePath(filePathPart);
+        }
 
         setWindowTitle(
             QString("%1 - %2[*]")
                 .arg(projDir.dirName())
-                .arg(projDir.relativeFilePath(editor->filePath()))
+                .arg(filePathPart)
             );
 
         setWindowModified(editor->qutepart().document()->isModified());

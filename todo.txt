@@ -2,8 +2,6 @@
 
         Release 1
 
-When duplicating lines with Alt+D, preserve cursor column
-Create new file with Ctrl+N
 Restore main window geometry on start
 Bookmarks are not updated on jupm to bookmark
 Autocompletion sometimes doesn't work

@@ -25,6 +25,7 @@ Workspace::Workspace(MainWindow* mainWindow):
     new OpenFileList(mainWindow_, this);
 
     connect(this, &Workspace::currentEditorChanged, mainWindow_, &MainWindow::updateTitle);
+    connect(this, &Workspace::editorFilePathChanged, mainWindow_, &MainWindow::updateTitle);
 }
 
 Workspace::~Workspace() {
@@ -67,6 +68,18 @@ void Workspace::openFile(const QString& filePath, int line) {
     addEditor(editor);
     setCurrentEditor(editor);
     editor->qutepart().setFocus();
+}
+
+Editor* Workspace::createNewFile() {
+    Editor *editor = new Editor(QString::null, QString::null, mainWindow_);
+
+    editor->qutepart().document()->setModified(false);
+
+    addEditor(editor);
+    setCurrentEditor(editor);
+    editor->qutepart().setFocus();
+
+    return editor;
 }
 
 Editor* Workspace::createEmptyNotSavedFile(const QString& path) {
@@ -138,6 +151,9 @@ void Workspace::addEditor(Editor* editor) {
 
     connect(editor->qutepart().document(), &QTextDocument::modificationChanged,
             [=](bool modified) { emit modifiedChanged(editor, modified); });
+
+    connect(editor, &Editor::filePathChanged,
+            [=](const QString& newPath) { emit editorFilePathChanged(editor, newPath); });
 
     emit editorOpened(editor);
 }

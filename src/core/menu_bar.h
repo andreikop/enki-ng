@@ -11,6 +11,7 @@ public:
     QMenu* fileMenu() const;
     QMenu* viewMenu() const;
 
+    QAction* fileNewAction() const;
     QAction* fileOpenAction() const;
     QAction* fileSaveAction() const;
     QAction* fileCloseAction() const;
@@ -32,6 +33,7 @@ private:
     QMenu* viewMenu_;
     QMenu* zoomMenu_;
 
+    QAction* fileNewAction_;
     QAction* fileOpenAction_;
     QAction* fileSaveAction_;
     QAction* fileCloseAction_;

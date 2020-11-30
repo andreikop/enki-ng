@@ -34,7 +34,8 @@ public:
             this, &OpenedFileModel::onEditorClosed);
         connect(workspace, &Workspace::modifiedChanged,
             this, &OpenedFileModel::onEditorModifiedChanged);
-
+        connect(workspace, &Workspace::editorFilePathChanged,
+            this, &OpenedFileModel::onEditorFilePathChanged);
     }
 
     int columnCount(const QModelIndex& /*parent*/) const {
@@ -80,18 +81,22 @@ public:
         uniqPathList_.reserve(editors_.length());
         for(int index = 0; index < editors_.length(); index++) {
             QString path = editors_[index]->filePath();
-            QString part = QFileInfo(path).fileName();
-
-            int existingIndex = uniqPathList_.indexOf(part);
-
-            if (existingIndex == -1) {
-                uniqPathList_.append(part);
+            if (path.isNull()) {
+                uniqPathList_.append("New file");
             } else {
-                QString anotherPath = editors_[existingIndex]->filePath();
+                QString part = QFileInfo(path).fileName();
 
-                findUniqParts(path, anotherPath);
-                uniqPathList_.append(path);
-                uniqPathList_[existingIndex] = anotherPath;
+                int existingIndex = uniqPathList_.indexOf(part);
+
+                if (existingIndex == -1) {
+                    uniqPathList_.append(part);
+                } else {
+                    QString anotherPath = editors_[existingIndex]->filePath();
+
+                    findUniqParts(path, anotherPath);
+                    uniqPathList_.append(path);
+                    uniqPathList_[existingIndex] = anotherPath;
+                }
             }
         }
 
@@ -115,7 +120,11 @@ public:
                 return uniqPathList_[index.row()];
             case Qt::EditRole:
             case Qt::ToolTipRole:
-                return editor->filePath();
+                if ( ! editor->filePath().isNull()) {
+                    return editor->filePath();
+                } else {
+                    return QString("New file");
+                }
             default:
                 return QVariant();
         }
@@ -159,7 +168,14 @@ private slots:
         rebuildUniqPathList();
     }
 
-    void onEditorModifiedChanged(Editor* editor, bool /*modified*/) {
+    void onEditorModifiedChanged(Editor* editor) {
+        int editorIndex = editors_.indexOf(editor);
+        QModelIndex modelIndex = index(editorIndex, 0);
+        emit dataChanged(modelIndex, modelIndex);
+    }
+
+    void onEditorFilePathChanged(Editor* editor) {
+        rebuildUniqPathList();
         int editorIndex = editors_.indexOf(editor);
         QModelIndex modelIndex = index(editorIndex, 0);
         emit dataChanged(modelIndex, modelIndex);
