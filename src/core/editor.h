@@ -12,6 +12,7 @@ class Editor: public QObject {
 public:
     Editor(const QString& filePath, const QString& text, QMainWindow* parent);
 
+    // File path. Could be QString::null for a new file.
     const QString& filePath() const;
     void setFilePath(const QString& filePath);
 

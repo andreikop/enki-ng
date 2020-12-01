@@ -2,44 +2,36 @@
 
         Release 1
 
-Restore main window geometry on start
-Bookmarks are not updated on jupm to bookmark
-Autocompletion sometimes doesn't work
-Line numbers are not updated on pgup pgdown
-
-Join file browser and open files docs
-:line-number in Locator
-Search: highlight selected
-Status bar
-Replace functionality
-Search in directory
-GUI configuration
-Vim
-Document API
-Restore previous session on start
-Why public and private is indented when : pressed?
-
-Bad hanging indent handling C++
-    zoomInAction_ = core().mainWindow().menuBar().zoomMenu().addAction(
-        "Zoom In",
-
-Comment/Uncomment code block with Ctrl+/
-#if 0 is not highlighted as a comment
-After file reopened and #if 0 removed, not rehighlighted back
-
+Features:
+    Restore main window geometry on start
+    Join file browser and open files docs
+    :line-number in Locator
+    Search: highlight selected
+    Status bar
+    Replace functionality
+    Search in directory
+    GUI configuration
+    Vim
+    Document API
+    Restore previous session on start
+    Comment/Uncomment code block with Ctrl+/
     Rework FS Model
+    Show something when directory not under GIT
+    Ask if want to save file when editor closed
 
-Show something when directory not under GIT
+Bugs:
+    Autocompletion sometimes doesn't work
+    Bad hanging indent handling C++
+        zoomInAction_ = core().mainWindow().menuBar().zoomMenu().addAction(
+            "Zoom In",
 
 
     Later
 
-FS model: refresh automatically
-Edit: Comment and uncomment lines
-Edit: insert empty lines before and after
-Autocomplete braces
-Autocompletable directory change command
-File system model: ignore binary files
-Git ignored files: support windows
-Configurable color themes
-Show gitignored files in the tree as disabled
+Features:
+    Autocomplete braces
+    Autocompletable directory change command
+    File system model: ignore binary files
+    Git ignored files: support windows
+    Show gitignored files in the tree as disabled
+    Configurable color themes
